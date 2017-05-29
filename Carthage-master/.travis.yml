@@ -1,0 +1,39 @@
+install: true
+git:
+  submodules: false
+branches:
+  only:
+    - master
+before_script:
+  - xcrun simctl delete BE8E0914-5B5F-45C2-8C99-879894AF72B0
+matrix:
+  include:
+    - os: osx
+      language: objective-c
+      osx_image: xcode8.2
+      script: make test
+      env: JOB=CI_BUILD_TEST
+    - os: osx
+      language: objective-c
+      osx_image: xcode8.2
+      script: make package
+      env: JOB=CI_BUILD_PACKAGE
+    - os: osx
+      language: objective-c
+      osx_image: xcode8.2
+      script:
+        - brew update
+        - brew uninstall carthage
+        - brew install bats
+        - make install
+        - bats Source/CarthageIntegration
+      env:
+        - JOB=INTEGRATION_TESTS
+        - XCODE_ACTION=build-for-testing
+notifications:
+  email: false
+  slack:
+    secure: lblNhCx6581hiPskQQnH663QY/HHqs6y8rMCLIff1Ryq0ngBaTwBJZ6E5tAR8oWTGWg3nMAAm/AaJPQGFC9jnKxtpWJhuEF58RY+EBe1Rz3gjKmacvEZS+PW+k3cRrRPZr6Vh6D8d0cb1gfM7BvGZar21ipBC/WcnNden3LxZ+0=
+env:
+  global:
+    - secure: DofNs+Ej7JblkkGMTHOl4XMBfv0EKVvzZU7OOm7U6Hyxu0J0SN6E3s61Q4HUWOBvM3Yrxf+8jpFKI29w69WArmRPpmK6GCaZar8ldUBHNmN3gaeOaGmGyrmnre4hxHjJzc0E3HAmJ03v94HW5JwQzKpIUjxg4dSttJMT6WOmnxE=
