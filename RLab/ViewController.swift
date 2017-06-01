@@ -16,6 +16,10 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
     @IBOutlet weak var _username: UITextField?
     @IBOutlet weak var _password: UITextField?
     @IBOutlet weak var rememberCredentials: UISwitch!
+    
+    //@IBOutlet weak var headerTopConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     var keyChainUser: String?
     var keyChainPwd: String?
     var isUsrSaved:Bool = false
@@ -27,19 +31,31 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
 //    var password = String()
     
     func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+       /* if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y == 0{
                 self.view.frame.origin.y -= keyboardSize.height
             }
-        }
+        }*/
+        let info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        
+        UIView.animate(withDuration: 0.1, animations: { () -> Void in
+            self.bottomConstraint.constant = keyboardFrame.size.height + 20
+        })
     }
     
     func keyboardWillHide(notification: NSNotification) {
+        /*
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y != 0{
                 self.view.frame.origin.y += keyboardSize.height
             }
-        }
+        }*/
+        
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self);
     }
 
     
@@ -60,8 +76,8 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
 //        password = UserDefaults.standard.string(forKey: "keepPassword")!
         // Do any additional setup after loading the view, typically from a nib.
         
-        //NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        //NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
         tap.cancelsTouchesInView = false
