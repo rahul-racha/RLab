@@ -199,6 +199,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                                 Manager.userPresent = false
                             }
                             Manager.triggerNotifications = true
+                            Manager.controlLoadAllCells = false
                             self.present(destinationController, animated: true, completion: nil)
 //                            )
 //                            }

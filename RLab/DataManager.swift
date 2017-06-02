@@ -16,6 +16,8 @@ struct Manager {
     static var controlData: Bool?  // Need to put this in CreateAgileViewController
     static var toggleAssistant: Bool = false
     static var triggerNotifications: Bool = false
+    static var studentDetails : [Dictionary<String,Any>]?
+    static var controlLoadAllCells: Bool = false
 }
 
 

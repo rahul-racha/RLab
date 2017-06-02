@@ -71,7 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
         print(deviceTokenString)
         Manager.deviceId = deviceTokenString
-        //print(isDevelopmentEnvironment())
+        print(isDevelopmentEnvironment())
 
     }
     
@@ -98,21 +98,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print(userInfo)
+        let data  = userInfo["aps"] as! [String : Any]
+        let student: [String: Any] = data["data"] as! [String : Any]
+        if (student["userid"] != nil && student["status"] != nil) {
         //notificationReceived(notification: userInfo)
         //let aps = userInfo["aps"] as! [String: Any]
         if (Manager.triggerNotifications == true) {
-        reNew()
+            updateCell(student: student)
         }
         
 //        if (aps["content-available"] as? NSString)?.integerValue == 1 {
 //            // Refresh Podcast
 //            
 //        }
+        }
     }
     
-    func reNew() {
+    func updateCell(student: [String: Any]) {
+        Manager.controlLoadAllCells = true
+        print(student)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         UIApplication.shared.keyWindow?.rootViewController = storyboard.instantiateViewController(withIdentifier: "tabBarController")
+        let tb = UIApplication.shared.keyWindow?.rootViewController as! CustomTabBarController
+        let nc = tb.viewControllers?[0] as! UINavigationController
+        //tb.reloadCell(student: student)
+        if nc.topViewController is AvailabilityController {
+            let ac = nc.topViewController as! AvailabilityController
+            ac.viewDidLoad()
+            let _ = ac.view
+            ac.reloadIndexPath(student: student)
+        }
+        Manager.controlLoadAllCells = false
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

@@ -30,7 +30,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     let beaconRegion  = CLBeaconRegion(proximityUUID: NSUUID(uuidString: "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")! as UUID, identifier: "handsOnBeacon")
     let locationManager: CLLocationManager = CLLocationManager()
     var beaconsToMonitor: [CLBeaconRegion] = []
-    var studentDetails : [Dictionary<String,Any>]?
+    
     var names = [String]()
     var row_id = 0
     var userName: String?
@@ -43,6 +43,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     var controller: Bool = true
     var reloadController: Bool?
     var status: Bool?
+    var role: String?
     
     @IBOutlet weak var toggleAssistant: UISwitch!
     @IBOutlet var tableView: UITableView!
@@ -67,17 +68,20 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             self.toggleAssistant.isHidden = false
             if(self.toggleAssistant.isOn == true) {
                 userId = 6
+                self.role = "R.A"
                 Manager.toggleAssistant = true
             }else {
                 userId = 14
+                self.role = "T.A"
                 Manager.toggleAssistant = false
             }
         }
         else {
             self.toggleAssistant.isHidden = true
             userId = Int(Manager.userData?["userid"] as! String)
+            self.role = Manager.userData?["role"] as! String
         }
-        
+        if (Manager.controlLoadAllCells == false) {
         let parameters: Parameters = ["userid": userId! ]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/ChartData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
@@ -85,7 +89,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 if let data = response.data {
                     do {
                         let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! Dictionary<String,Any>
-                        self.studentDetails = json["student_details"] as? [Dictionary<String,Any>]
+                        Manager.studentDetails = json["student_details"] as? [Dictionary<String,Any>]
                         DispatchQueue.main.async(execute: {
                             self.isDataReceived = true
                             self.tableView.reloadData()
@@ -97,7 +101,9 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                     }
                 }
         }
-        
+    }
+        //self.tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "tableViewCell")
+        //self.tableView.register(/*UITableViewCell.self*/TableViewCell.self, forCellReuseIdentifier: "tableViewCell")
         //if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
         self.locationManager.requestAlwaysAuthorization()
         //}
@@ -163,6 +169,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     }
     
     @IBAction func refreshView(_ sender: Any) {
+        Manager.controlLoadAllCells = false
         viewDidLoad()
     }
     
@@ -194,11 +201,27 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         return header
     }
     
+    func reloadIndexPath(student: [String: Any]) {
+        //let _ = self.view
+        if (Manager.studentDetails != nil) {
+            for i in 0..<Manager.studentDetails!.count {
+                if (Manager.studentDetails?[i]["userid"] as? String == student["userid"] as? String) {
+                    if (self.role /*Manager.studentDetails?[i]["role"] as? String*/ == student["role"] as? String) {
+                        Manager.studentDetails?[i]["status"] = student["status"]
+                        let indexPath: IndexPath = IndexPath(row: i, section: 0)
+                        self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.bottom)
+                    }
+                    break
+                    
+                }
+            }
+        }
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        if self.studentDetails != nil {
-            return self.studentDetails!.count
+        if Manager.studentDetails != nil {
+            return Manager.studentDetails!.count
         }
         
         return 0
@@ -282,9 +305,9 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
         // Configure the cell...
-        if self.studentDetails != nil {
-            cell.name.text=self.studentDetails?[indexPath.row]["username"] as? String
-            cell.projects.text = self.studentDetails?[indexPath.row]["projects"] as? String
+        if Manager.studentDetails != nil {
+            cell.name.text=Manager.studentDetails?[indexPath.row]["username"] as? String
+            cell.projects.text = Manager.studentDetails?[indexPath.row]["projects"] as? String
             /*dispatch_get_global_queue( DispatchQueue.GlobalQueuePriority.default, 0).async(execute: {
                 do {
                 cell.profileImage.image =  UIImage(data: NSData(contentsOf: NSURL(string:"http://upload.wikimedia.org/wikipedia/en/4/43/Apple_Swift_Logo.png") as! URL) as Data)
@@ -292,10 +315,10 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                      cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
                 }
             })*/
-            
-            if (self.studentDetails?[indexPath.row]["image"] != nil) {
+            cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
+            if (Manager.studentDetails?[indexPath.row]["image"] != nil) {
                 DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
-                    let url = URL(string: (self.studentDetails?[indexPath.row]["image"] as? String)!)
+                    let url = URL(string: (Manager.studentDetails?[indexPath.row]["image"] as? String)!)
                     if (url != nil) {
                         let data = try? Data(contentsOf: url!)
                         if (data != nil) {
@@ -313,7 +336,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             
             
             cell.backgroundColor = UIColor.clear
-            if self.studentDetails?[indexPath.row]["status"] as? String == "Yes" {
+            if Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes" {
                 cell.studentActivityStatus(status: StatusColor.available)
                 cell.weekHours.textColor = UIColor.blue
             } else {
@@ -322,8 +345,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             }
             
             cell.availabilityChartView.noDataText = "Availability Info Not Found"
-            let xData: [String] = (self.studentDetails?[indexPath.row]["xLabels"] as? [String])!
-            let yData: [Double] = (self.studentDetails?[indexPath.row]["value"] as? [Double])!
+            let xData: [String] = (Manager.studentDetails?[indexPath.row]["xLabels"] as? [String])!
+            let yData: [Double] = (Manager.studentDetails?[indexPath.row]["value"] as? [Double])!
             self.setChart(cell: cell, dataPoints: xData, values: yData, indexPath: indexPath)
         } else {
             cell.name.text = "student" + String(indexPath.row)
@@ -342,7 +365,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
         
         cell.backgroundColor = UIColor.clear
-        if self.studentDetails?[indexPath.row]["status"] as? String == "Yes" {
+        if Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes" {
             cell.studentActivityStatus(status: StatusColor.available)
             cell.weekHours.textColor = UIColor.blue
             self.status = true
@@ -352,8 +375,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             self.status = false
         }
         self.reloadController = true
-        self.userName = self.studentDetails?[indexPath.row]["username"] as? String//currentCell.textLabel?.text
-        self.userId = Int((self.studentDetails?[indexPath.row]["userid"] as? String)!)!
+        self.userName = Manager.studentDetails?[indexPath.row]["username"] as? String//currentCell.textLabel?.text
+        self.userId = Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!)!
         performSegue(withIdentifier: "LogViewController", sender: self)
 
     }

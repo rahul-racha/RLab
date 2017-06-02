@@ -19,6 +19,7 @@
 		41891ADE1EBFC69C00CACF06 /* NotesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41891ADD1EBFC69C00CACF06 /* NotesViewController.swift */; };
 		41891AE11EBFCA8A00CACF06 /* NotesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41891ADF1EBFCA8A00CACF06 /* NotesCollectionViewCell.swift */; };
 		41A989391E7CD7C200778E77 /* AvailabilityChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A989381E7CD7C200778E77 /* AvailabilityChartView.swift */; };
+		41B61AD91EE0FD56008865FF /* CustomTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B61AD81EE0FD56008865FF /* CustomTabBarController.swift */; };
 		41B926DD1E70C3F900A537DE /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B926DC1E70C3F900A537DE /* LogViewController.swift */; };
 		41B926EF1E70E3BB00A537DE /* LogViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B926ED1E70E3BB00A537DE /* LogViewCell.swift */; };
 		41D952F41ECCF65E0097587E /* CreateAgileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D952F31ECCF65E0097587E /* CreateAgileViewController.swift */; };
@@ -62,6 +63,7 @@
 		41891ADD1EBFC69C00CACF06 /* NotesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotesViewController.swift; sourceTree = "<group>"; };
 		41891ADF1EBFCA8A00CACF06 /* NotesCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotesCollectionViewCell.swift; sourceTree = "<group>"; };
 		41A989381E7CD7C200778E77 /* AvailabilityChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AvailabilityChartView.swift; sourceTree = "<group>"; };
+		41B61AD81EE0FD56008865FF /* CustomTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTabBarController.swift; sourceTree = "<group>"; };
 		41B926D81E6E610400A537DE /* RLab.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RLab.entitlements; sourceTree = "<group>"; };
 		41B926DC1E70C3F900A537DE /* LogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		41B926ED1E70E3BB00A537DE /* LogViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogViewCell.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				41B926D81E6E610400A537DE /* RLab.entitlements */,
 				41EEF5B61E384217001DB052 /* AppDelegate.swift */,
 				41EEF5B81E384217001DB052 /* ViewController.swift */,
+				41B61AD81EE0FD56008865FF /* CustomTabBarController.swift */,
 				41EEF5BA1E384217001DB052 /* Main.storyboard */,
 				41EEF5BD1E384217001DB052 /* Assets.xcassets */,
 				41EEF5BF1E384217001DB052 /* LaunchScreen.storyboard */,
@@ -336,6 +339,7 @@
 				41B926EF1E70E3BB00A537DE /* LogViewCell.swift in Sources */,
 				41399F901E5D8B93000D82B8 /* AvailabilityController.swift in Sources */,
 				41D952F41ECCF65E0097587E /* CreateAgileViewController.swift in Sources */,
+				41B61AD91EE0FD56008865FF /* CustomTabBarController.swift in Sources */,
 				41D953131ECF627E0097587E /* ProfTableViewCell.swift in Sources */,
 				41EEF5B91E384217001DB052 /* ViewController.swift in Sources */,
 				41399F891E5D70C4000D82B8 /* DataManager.swift in Sources */,

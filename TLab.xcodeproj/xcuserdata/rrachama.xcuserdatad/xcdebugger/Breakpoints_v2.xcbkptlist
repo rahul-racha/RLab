@@ -172,11 +172,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RLab/AvailabilityController.swift"
-            timestampString = "517762030.536539"
+            timestampString = "518112857.660095"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "507"
-            endingLineNumber = "507"
+            startingLineNumber = "530"
+            endingLineNumber = "530"
             landmarkName = "locationManager(_:didDetermineState:for:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -188,11 +188,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RLab/AvailabilityController.swift"
-            timestampString = "517762030.536539"
+            timestampString = "518112857.660095"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "566"
-            endingLineNumber = "566"
+            startingLineNumber = "589"
+            endingLineNumber = "589"
             landmarkName = "peripheralManagerDidUpdateState(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -204,11 +204,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RLab/AvailabilityController.swift"
-            timestampString = "517762030.536539"
+            timestampString = "518112857.660095"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "302"
-            endingLineNumber = "302"
+            startingLineNumber = "325"
+            endingLineNumber = "325"
             landmarkName = "tableView(_:cellForRowAt:)"
             landmarkType = "7">
             <Locations>
@@ -219,13 +219,13 @@
                   symbolName = "TLab.AvailabilityController.(tableView (__ObjC.UITableView, cellForRowAt : Foundation.IndexPath) -&gt; __ObjC.UITableViewCell).(closure #1)"
                   moduleName = "TLab"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/RLab/RLab/AvailabilityController.swift"
-                  timestampString = "517762036.693527"
+                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/LabMonitoring-iOS/RLab/AvailabilityController.swift"
+                  timestampString = "518112197.274912"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "302"
-                  endingLineNumber = "302"
-                  offsetFromSymbolStart = "876">
+                  startingLineNumber = "326"
+                  endingLineNumber = "326"
+                  offsetFromSymbolStart = "816">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -234,12 +234,12 @@
                   symbolName = "TLab.AvailabilityController.(tableView (__ObjC.UITableView, cellForRowAt : Foundation.IndexPath) -&gt; __ObjC.UITableViewCell).(closure #1).(closure #1)"
                   moduleName = "TLab"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/RLab/RLab/AvailabilityController.swift"
-                  timestampString = "517762036.695384"
+                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/LabMonitoring-iOS/RLab/AvailabilityController.swift"
+                  timestampString = "518112197.276772"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "303"
-                  endingLineNumber = "303"
+                  startingLineNumber = "327"
+                  endingLineNumber = "327"
                   offsetFromSymbolStart = "28">
                </Location>
             </Locations>
@@ -252,11 +252,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RLab/AvailabilityController.swift"
-            timestampString = "517762030.536539"
+            timestampString = "518112857.660095"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "297"
-            endingLineNumber = "297"
+            startingLineNumber = "320"
+            endingLineNumber = "320"
             landmarkName = "tableView(_:cellForRowAt:)"
             landmarkType = "7">
             <Locations>
@@ -267,13 +267,13 @@
                   symbolName = "TLab.AvailabilityController.tableView (__ObjC.UITableView, cellForRowAt : Foundation.IndexPath) -&gt; __ObjC.UITableViewCell"
                   moduleName = "TLab"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/RLab/RLab/AvailabilityController.swift"
-                  timestampString = "517762036.700965"
+                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/LabMonitoring-iOS/RLab/AvailabilityController.swift"
+                  timestampString = "518112197.280842"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "297"
-                  endingLineNumber = "297"
-                  offsetFromSymbolStart = "2776">
+                  startingLineNumber = "321"
+                  endingLineNumber = "321"
+                  offsetFromSymbolStart = "2584">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -282,13 +282,13 @@
                   symbolName = "TLab.AvailabilityController.(tableView (__ObjC.UITableView, cellForRowAt : Foundation.IndexPath) -&gt; __ObjC.UITableViewCell).(closure #1)"
                   moduleName = "TLab"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/RLab/RLab/AvailabilityController.swift"
-                  timestampString = "517762036.70386"
+                  urlString = "file:///Users/rrachama/Documents/Sample_iOS/LabMonitoring-iOS/RLab/AvailabilityController.swift"
+                  timestampString = "518112197.28271"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "298"
-                  endingLineNumber = "298"
-                  offsetFromSymbolStart = "44">
+                  startingLineNumber = "322"
+                  endingLineNumber = "322"
+                  offsetFromSymbolStart = "32">
                </Location>
             </Locations>
          </BreakpointContent>
