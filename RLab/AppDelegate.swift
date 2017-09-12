@@ -23,20 +23,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        //let containerViewController = ContainerViewController()
+      
+        registerForPushNotifications(application: application)
+        Manager.studentDetails = nil
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        //let _ = self.window?.rootViewController as! LoginViewController
+        UIApplication.shared.keyWindow?.rootViewController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
         
-        //window!.rootViewController = containerViewController
-        //window!.makeKeyAndVisible()
+        /*
         let center = UNUserNotificationCenter.current()
         //center.requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
             // Enable or disable features based on authorization.
         //}
         center.requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in }
         application.registerForRemoteNotifications()
-        //UIApplication.shared.registerForRemoteNotifications()
+        //UIApplication.shared.registerForRemoteNotifications()*/
         return true
     }
+    
+    func registerForPushNotifications(application: UIApplication) {
+        if #available(iOS 10.0, *) {
+            let center = UNUserNotificationCenter.current()
+            center.requestAuthorization(options: [.badge, .alert, .sound]) { (granted, error) in }
+            application.registerForRemoteNotifications()
+        } else if #available(iOS 9.0, *) {
+            
+            UIApplication.shared.registerUserNotificationSettings(UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil))
+            UIApplication.shared.registerForRemoteNotifications()
+        } else if #available(iOS 8.0, *) {
+            UIApplication.shared.registerUserNotificationSettings(UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil))
+            UIApplication.shared.registerForRemoteNotifications()
+        } else {
+            application.registerForRemoteNotifications(matching: [.badge, .sound, .alert])
+        }
+        
+        
+    }
+
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

@@ -26,6 +26,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
     var isPwdSaved:Bool = false
     var isUsrRemoved:Bool = true
     var isPwdRemoved:Bool = true
+    var bConst: NSLayoutConstraint?
 //    var switchState = Bool()
 //    var userName = String()
 //    var password = String()
@@ -51,6 +52,14 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                 self.view.frame.origin.y += keyboardSize.height
             }
         }*/
+        let info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        
+        UIView.animate(withDuration: 0.1, animations: { () -> Void in
+            if (self.bConst != nil) {
+            self.bottomConstraint.constant = (self.bConst?.constant)!
+            }
+        })
         
     }
 
@@ -82,6 +91,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
+        self.bConst = self.bottomConstraint
     }
 
     override func didReceiveMemoryWarning() {
@@ -189,9 +199,9 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
 //                            self.actInd.stopAnimating(
                             
                             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            let destinationController = storyboard.instantiateViewController(withIdentifier: "tabBarController")
-                            //let sv = storyboard.instantiateViewController(withIdentifier: "successView") as! LocationViewController
-                            //let sv.userData = dict
+                            let destinationController = storyboard.instantiateViewController(withIdentifier: "tabBarController") as! CustomTabBarController
+                            UIApplication.shared.keyWindow?.rootViewController = destinationController
+
                             Manager.userData = dict
                             if (Manager.userData!["status"] as! String == "Yes") {
                                 Manager.userPresent = true

@@ -655,7 +655,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         }
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
+        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
         self.dismiss(animated: true, completion: nil)
         self.present(destinationController, animated: true, completion: nil)
     }
