@@ -9,19 +9,24 @@
 import UIKit
 import Alamofire
 
-class CreateAgileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, NSURLConnectionDelegate  {
+class CreateAgileViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate,UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, NSURLConnectionDelegate  {
  
     @IBOutlet weak var projectName: UITextField!
     @IBOutlet weak var msgBox: UITextView!
+    @IBOutlet weak var profTextField: UITextField!
+    
     @IBOutlet weak var membersView: UITableView!
-    @IBOutlet weak var professorView: UITableView!
+    //@IBOutlet weak var professorView: UITableView!
     
     var memberDetails: [Dictionary<String,Any>]?
     var profDetails: [Dictionary<String,Any>]?
+    
     var allMembers: [Int:Int] = [0 : 0]
-    var allProf: [Int:Int] = [0 : 0]
+    //var allProf: [Int:Int] = [0 : 0]
     var selectedMembers = Set<Int>()
-    var selectedProf = Set<Int>()
+    //var selectedProf = Set<Int>()
+    var pickOption = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.msgBox.delegate = self
@@ -29,9 +34,17 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         self.msgBox.textColor = UIColor.lightGray
         
         self.selectedMembers.removeAll()
-        self.selectedProf.removeAll()
+        //self.selectedProf.removeAll()
         self.allMembers.removeAll()
-        self.allProf.removeAll()
+        //self.allProf.removeAll()
+        /*if let roleVar = Manager.userData?["role"] as? String {
+            if (roleVar == "Professor") {
+                self.profTextField.isHidden = true
+            } else {
+                self.profTextField.isHidden = false
+            }
+            
+        }*/
         
         let userId = Int(Manager.userData?["userid"] as! String)
      
@@ -45,9 +58,11 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
                         let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! Dictionary<String,Any>
                         self.memberDetails = json["students"] as? [Dictionary<String,Any>]
                         self.profDetails = json["professors"] as? [Dictionary<String,Any>]
+
                         DispatchQueue.main.async(execute: {
+                            self.addPickerDetails()
                             self.membersView.reloadData()
-                            self.professorView.reloadData()
+                            //self.professorView.reloadData()
                         })
                         
                     }
@@ -62,6 +77,8 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
+        
+        self.initProfPicker()
     }
     
     func displayAlertMessage(message: String, isOk: Bool) {
@@ -79,6 +96,48 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         alertMsg.view.setNeedsLayout()
         present(alertMsg, animated:true, completion: nil)
         //self.parent?.parent?.dismiss(animated: true, completion: nil)
+    }
+    
+    func displayVanishingAlert(message: String) {
+        let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        self.present(alert, animated: true, completion: nil)
+        
+        // change to desired number of seconds (in this case 5 seconds)
+        let when = DispatchTime.now() + 0.8
+        DispatchQueue.main.asyncAfter(deadline: when){
+            // your code with delay
+            alert.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    func addPickerDetails() {
+        
+        if (self.profDetails != nil) {
+            for i in 0..<(self.profDetails?.count)! {
+                if let name = self.profDetails?[i]["username"] as? String {
+                    self.pickOption.append(name)
+                    /*
+                    if let role = Manager.userData?["role"] as? String {
+                        if (role == "Professor") {
+                            print(self.memberDetails)
+                            print((self.memberDetails?.count)!)
+                            //if (self.memberDetails != nil) {
+                                self.memberDetails?.append((self.profDetails?[i])!)
+                                //self.memberDetails?[(self.memberDetails?.count)!]["username"] = name
+                                //self.memberDetails?[(self.memberDetails?.count)!]["userid"] = Int((self.profDetails?[i]["userid"] as? String)!)
+                            //} else {
+                            //    self.memberDetails?[0]["username"] = name
+                            //    self.memberDetails?[0]["userid"] = Int((self.profDetails?[i]["userid"] as? String)!)
+                            //}
+                        }
+                    }
+                    */
+                }
+            }
+        
+        }
+
+        
     }
     
     func dismissCreateCon() {
@@ -111,18 +170,19 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if (tableView == self.membersView) {
         if (self.memberDetails?.count != nil) {
             return self.memberDetails!.count
         }
-        }
+        }/*
         else if (tableView == self.professorView) {
             if (self.profDetails?.count != nil) {
                 return self.profDetails!.count
             }
-        }
+        }*/
         return 0
     }
     
@@ -142,7 +202,7 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
             //print("id in cell: \((cell as! MemberTableViewCell).userid)")
             self.allMembers[indexPath.row] = id
             return cell as! MemberTableViewCell
-        } else if (tableView == professorView) {
+        } /*else if (tableView == professorView) {
             cell = (tableView.dequeueReusableCell(withIdentifier: "profTableViewCell", for: indexPath) as! ProfTableViewCell)
             (cell as! ProfTableViewCell).professor.text = self.profDetails?[indexPath.row]["username"] as? String
             let id = Int((self.profDetails?[indexPath.row]["userid"] as? String)!)
@@ -150,7 +210,7 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
             //(cell as! ProfTableViewCell).userid = id  //layer.setValue(value: userid, forKey: "userid" )
             //print("id in cell: \((cell as! ProfTableViewCell).userid)")
             return cell as! ProfTableViewCell
-        }
+        }*/
         
         }
 
@@ -172,7 +232,7 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
                 print("id : \(self.allMembers[indexPath.row])") // \((cell as! MemberTableViewCell).userid)")
                 self.selectedMembers.insert(self.allMembers[indexPath.row]!)
             }
-        } else {
+        } /*else {
            // let cell = (tableView.dequeueReusableCell(withIdentifier: "profTableViewCell", for: indexPath) as! ProfTableViewCell)
             if professorView.cellForRow(at: indexPath)?.accessoryType == UITableViewCellAccessoryType.checkmark {
                 professorView.cellForRow(at: indexPath)?.accessoryType = UITableViewCellAccessoryType.none
@@ -184,34 +244,58 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
                 print("id :  \(self.allProf[indexPath.row])")
                 self.selectedProf.insert(self.allProf[indexPath.row]!)
             }
-        }
+        }*/
     }
     
     @IBAction func performSaveAction(_ sender: Any) {
-        if (self.projectName.text?.isEmpty)! || (self.msgBox.text?.isEmpty)! {
+        if (self.projectName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.msgBox.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! {
             displayAlertMessage(message: "All fields are required", isOk: false)
             return
         }
         
-        if (self.selectedMembers.isEmpty) || (self.selectedProf.isEmpty) {
-            displayAlertMessage(message: "select 1 Professor and atleast 1 student", isOk: false)
+        if ((self.profTextField?.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!) {
+            displayAlertMessage(message: "select a Professor", isOk: false)
+            return
+        }
+        
+        if (self.selectedMembers.isEmpty) {
+            displayAlertMessage(message: "select atleast 1 Member", isOk: false)
             return
         }
         
         //let username = Manager.userData?["username"] as! String
         let userid = Int((Manager.userData?["userid"] as? String)!)
-        let profid = self.selectedProf.popFirst()!
+        var profid = -1
+        
+        /*if let roleVar = Manager.userData?["role"] as? String {
+        if (roleVar == "Professor") {
+            profid = Int((Manager.userData?["userid"] as? String)!)!
+        } else {*/
+            let pickerName = self.profTextField.text
+            if (self.profDetails != nil) {
+                for i in 0..<(self.profDetails?.count)! {
+                    if let profname = self.profDetails?[i]["username"] as? String {
+                    if (pickerName == profname) {
+                        profid = Int((self.profDetails?[i]["userid"] as? String)!)!
+                        break
+                    }
+                }
+                }
+            }
+            //}
+        //}
+        
+        
+        //self.selectedProf.popFirst()!
         let proj = self.projectName.text
         let msg = self.msgBox.text
         var students = [Int](repeating: 0, count: self.selectedMembers.count)
         var i = 0
         for value in self.selectedMembers {
-            students[i] = value//self.selectedMembers.popFirst()!
+            students[i] = value
             i += 1
         }
         print("students: \(self.selectedMembers)")
-        print("profess: \(self.selectedProf)")
-        
       
         let parameters: Parameters = ["userid":userid!, "professorid": profid, "project_name": proj!, "message": msg!, "students": students]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/CreateAgileBoardData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
@@ -225,7 +309,9 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
                         self.displayAlertMessage(message: "Project Not Created. Enter valid names", isOk: false)
                      } else {
                         // Perform ACTION
-                        self.displayAlertMessage(message: "Project Created", isOk: true)
+                        //self.displayAlertMessage(message: "Project Created", isOk: true)
+                        self.displayVanishingAlert(message: "Project Created")
+                        //self.dismissCreateCon()
                     }
                     
                     //self.dismiss(animated: true, completion: nil)
@@ -234,30 +320,98 @@ class CreateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
-  //  @available(iOS 2.0, *)
+    @available(iOS 2.0, *)
     func numberOfSections(in tableView: UITableView) -> Int { // Default is 1 if not implemented
     
         return 1;
     }
  
-   // @available(iOS 2.0, *)
+    @available(iOS 2.0, *)
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     // fixed font style. use custom view (UILabel) if you want something different
         if (tableView == membersView) {
             return "Members";
-        } else if (tableView == professorView) {
+        } /*else if (tableView == professorView) {
             return "Professors"
-        }
+        }*/
         return nil
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    func initProfPicker() {
+        let pickerView = UIPickerView()
+        
+        pickerView.delegate = self
+        
+        self.profTextField.inputView = pickerView
+        
+        let toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.size.height/6, width: self.view.frame.size.width, height: 40.0))
+        
+        toolBar.layer.position = CGPoint(x: self.view.frame.size.width/2, y: self.view.frame.size.height-20.0)
+        
+        toolBar.barStyle = UIBarStyle.blackTranslucent
+        
+        toolBar.tintColor = UIColor.white
+        
+        toolBar.backgroundColor = UIColor.black
+        
+        
+        let defaultButton = UIBarButtonItem(title: "Default", style: UIBarButtonItemStyle.plain, target: self, action: #selector(CreateAgileViewController.tappedToolBarBtn))
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(CreateAgileViewController.donePressed))
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width / 3, height: self.view.frame.size.height))
+        
+        label.font = UIFont(name: "Helvetica", size: 11)
+        
+        label.backgroundColor = UIColor.clear
+        
+        label.textColor = UIColor.white
+        
+        label.text = "Select the Instructor"
+        
+        label.textAlignment = NSTextAlignment.center
+        
+        let textBtn = UIBarButtonItem(customView: label)
+        
+        toolBar.setItems([defaultButton,flexSpace,textBtn,flexSpace,doneButton], animated: true)
+        
+        self.profTextField.inputAccessoryView = toolBar
     }
-    */
+    
+    func donePressed(_ sender: UIBarButtonItem) {
+        
+        self.profTextField.resignFirstResponder()
+        
+    }
+    
+    func tappedToolBarBtn(_ sender: UIBarButtonItem) {
+        
+        self.profTextField.text = "Ajay Gupta"
+        
+        self.profTextField.resignFirstResponder()
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.pickOption.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return self.pickOption[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.profTextField.text = pickOption[row]
+    }
+
 
 }

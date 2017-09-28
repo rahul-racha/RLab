@@ -14,13 +14,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var window: UIWindow?
 
-//    func registerPushNotifications() {
-//        DispatchQueue.main.async {
-//            let settings = UNNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
-//            UIApplication.shared.registerUserNotificationSettings(settings)
-//        }
-//    }
-    
+/*    func registerPushNotifications() {
+        DispatchQueue.main.async {
+            let settings = UNNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
+            UIApplication.shared.registerUserNotificationSettings(settings)
+        }
+    }
+*/    
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
       
@@ -94,11 +94,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
         print(deviceTokenString)
         Manager.deviceId = deviceTokenString
-        print(isDevelopmentEnvironment())
+        //print(isDevelopmentEnvironment())
 
     }
     
-    func isDevelopmentEnvironment() -> Bool {
+    /*func isDevelopmentEnvironment() -> Bool {
         guard let filePath = Bundle.main.path(forResource: "embedded", ofType:"mobileprovision") else {
             return false
         }
@@ -113,7 +113,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } catch {}
         return false
-    }
+    }*/
     
     //func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UNNotificationSettings) {
         
@@ -122,18 +122,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print(userInfo)
         let data  = userInfo["aps"] as! [String : Any]
-        let student: [String: Any] = data["data"] as! [String : Any]
-        if (student["userid"] != nil && student["status"] != nil) {
-        //notificationReceived(notification: userInfo)
-        //let aps = userInfo["aps"] as! [String: Any]
-        if (Manager.triggerNotifications == true) {
-            updateCell(student: student)
-        }
-        
-//        if (aps["content-available"] as? NSString)?.integerValue == 1 {
-//            // Refresh Podcast
-//            
-//        }
+        if (data["data"] != nil) {
+            let student: [String: Any] = data["data"] as! [String : Any]
+            if (student["userid"] != nil && student["status"] != nil) {
+                //notificationReceived(notification: userInfo)
+                //let aps = userInfo["aps"] as! [String: Any]
+                if (Manager.triggerNotifications == true) {
+                    updateCell(student: student)
+                }
+                
+            }
+            completionHandler(UIBackgroundFetchResult.newData);
+        } else {
+            completionHandler(UIBackgroundFetchResult.noData);
         }
     }
     

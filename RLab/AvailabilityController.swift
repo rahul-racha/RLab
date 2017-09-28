@@ -27,9 +27,9 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
 
     
     //var refresher: UIRefreshControl!
-    let beaconRegion  = CLBeaconRegion(proximityUUID: NSUUID(uuidString: "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")! as UUID, identifier: "handsOnBeacon")
+    var beaconRegion: CLBeaconRegion? //(proximityUUID: NSUUID(uuidString: "")! as UUID, identifier: "handsOnBeacon")
     let locationManager: CLLocationManager = CLLocationManager()
-    var beaconsToMonitor: [CLBeaconRegion] = []
+    //var beaconsToMonitor: [CLBeaconRegion] = []
     
     var names = [String]()
     var row_id = 0
@@ -108,13 +108,13 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         self.locationManager.requestAlwaysAuthorization()
         //}
         self.locationManager.delegate = self
-        self.beaconRegion.notifyOnEntry = true;
-        self.beaconRegion.notifyOnExit = true;
-        self.beaconRegion.notifyEntryStateOnDisplay = true;
+        self.beaconRegion?.notifyOnEntry = true;
+        self.beaconRegion?.notifyOnExit = true;
+        self.beaconRegion?.notifyEntryStateOnDisplay = true;
         //self.locationManager.startMonitoring(for: self.beaconRegion)
         //self.locationManager.requestState(for: self.beaconRegion)
         
-        //self.locationManager.startRangingBeacons(in: self.beaconRegion)
+        self.locationManager.startRangingBeacons(in: CLBeaconRegion(proximityUUID: NSUUID(uuidString: "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")! as UUID, identifier: "handsOnBeacon"))
         
         //self.checkAvailabilityStatus()
         
@@ -248,26 +248,35 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     }
     
     func setChart(cell: TableViewCell,dataPoints: [String], values: [Double], indexPath: IndexPath) {
+        
+        let mapDaysToAbbr: [String: String] = ["Sun":"Su", "Mon":"M", "Tue":"T", "Wed":"W", "Thu":"Th", "Fri":"F", "Sat":"Sa"]
         cell.availabilityChartView.noDataText = "Log Data Not Available"
         //var values: [Double] = [5,7.2,6.1,2,8.5,4.4,7.7,9.1]
-    
+        var weekAbbr = [String]()
         let formato:BarChartFormatter = BarChartFormatter()
         let xaxis:XAxis = XAxis()
         
         var dataEntries: [BarChartDataEntry] = [BarChartDataEntry]()
         var xVals = [String]()
         var weekHours: Double = 0
-        formato.setWeek(receivedWeek: dataPoints)
+        
         var i = 0
         for data in dataPoints {
             let dataEntry = BarChartDataEntry(x: Double(i) ,y: values[i])
             weekHours = weekHours + values[i]
             dataEntries.append(dataEntry)
-            xVals.append(data)
+            if let day = mapDaysToAbbr[data] {
+                weekAbbr.append(day)
+                xVals.append(day)
+            } else {
+                xVals.append("X")
+                weekAbbr.append("X")
+            }
             _ = formato.stringForValue(Double(i), axis: xaxis)
             i = i+1
 
         }
+        formato.setWeek(receivedWeek: weekAbbr)
         
         xaxis.valueFormatter = formato
         
@@ -346,6 +355,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             
             cell.availabilityChartView.noDataText = "Availability Info Not Found"
             let xData: [String] = (Manager.studentDetails?[indexPath.row]["xLabels"] as? [String])!
+            print(xData)
             let yData: [Double] = (Manager.studentDetails?[indexPath.row]["value"] as? [Double])!
             self.setChart(cell: cell, dataPoints: xData, values: yData, indexPath: indexPath)
         } else {
@@ -431,7 +441,36 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         self.locationManager.requestState(for: region)
     })
     }
-
+    
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        if beacons.count > 0 {
+            if let installedBeaconUUID = Manager.userData?["beacon_uuid"] as? String {
+                for tempBeacon in beacons {
+                    print(String(describing: tempBeacon.proximityUUID))
+                    print(installedBeaconUUID)
+                    if (String(describing: tempBeacon.proximityUUID).caseInsensitiveCompare(String(describing:installedBeaconUUID)) == ComparisonResult.orderedSame) {
+                        if let uuid = UUID(uuidString: installedBeaconUUID) {
+                            if let maj = Manager.userData?["beacon_major"] as? Int, let min = Manager.userData?["beacon_minor"] as? Int {
+                                self.beaconRegion = CLBeaconRegion(
+                                    proximityUUID: uuid,
+                                    major: CLBeaconMajorValue(maj),
+                                    minor: CLBeaconMinorValue(min),
+                                    identifier: "handsOnBeacon")
+                                print("assigned min and maj")
+                            } else {
+                                self.beaconRegion = CLBeaconRegion(
+                                    proximityUUID: uuid,
+                                    identifier: "handsOnBeacon")
+                                print("no min no maj")
+                            }
+                            self.controller = true
+                            self.locationManager.startMonitoring(for: self.beaconRegion!)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     func handleInsideRegion() {
         let parameters: Parameters = ["userid":self.deviceUserId!,"action":"insert","availability":"Yes"]
@@ -468,7 +507,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"Yes"]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
-                Manager.userPresent = false
+                //Manager.userPresent = false
                 if let data = response.result.value {
                     print("*******\(data)****")
                     //Manager.userPresent = false
@@ -510,7 +549,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         print("Error monitoring: \(error.localizedDescription)")
         
-        self.statusCheck = "No"
+        //self.statusCheck = "No"
         print("Error location manager \(self.statusCheck)")
         
         //let userId = Manager.userData!["userid"]!
@@ -581,56 +620,131 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         
         print("IN BLUETOOTH")
-        switch peripheral.state {
-        case CBManagerState.poweredOn:
-            //isBTConnected = true
-            //statusCheck = "Yes"
-            print("IN BLUETOOTH POWER ON")
-            print("controlller: \(self.controller)")
-            self.locationManager.startMonitoring(for: self.beaconRegion)
-            break
-        case CBManagerState.poweredOff:
-            //isBTConnected = false
-            //statusCheck = "No"
-            print("IN BLUETOOTH POWER OFF")
-            print("controlller: \(self.controller)")
-            //Manager.userPresent = false
-            self.locationManager.stopMonitoring(for: self.beaconRegion)
-            self.controller = true
-            self.handleOutsideRegion()
-            break
-            /* case CBManagerState.resetting:
-             isBTConnected = false
-             //statusCheck = "No"
-             
-             break
-             case CBManagerState.unauthorized:
-             self.locationManager.requestAlwaysAuthorization()
-             isBTConnected = false
-             //statusCheck = "No"
-             
-             break
-             case CBManagerState.unsupported:
-             displayAlertMessage(message: "Bluetooth Not Supported")
-             isBTConnected = false
-             Manager.userPresent = false
-             //statusCheck = "No"
-             break
-             */
-        case CBManagerState.unknown :
-            print("BLUETOOTH state unknown")
-            //Manager.userPresent = false
-            self.locationManager.stopMonitoring(for: self.beaconRegion)
-            self.controller = true
-            break
-        default:
-            displayAlertMessage(message: "Bluetooth status Unknown")
-            isBTConnected = false
-            self.controller = true
-            //statusCheck = "No"
-            self.locationManager.stopMonitoring(for: self.beaconRegion)
-            break
-            
+        if #available(iOS 10.0, *) {
+            switch peripheral.state {
+            case CBManagerState.poweredOn:
+                //isBTConnected = true
+                //statusCheck = "Yes"
+                print("IN BLUETOOTH POWER ON")
+                print("controlller: \(self.controller)")
+                if (self.beaconRegion != nil) {
+                self.locationManager.startMonitoring(for: self.beaconRegion!)
+                }
+                break
+            case CBManagerState.poweredOff:
+                //isBTConnected = false
+                //statusCheck = "No"
+                print("IN BLUETOOTH POWER OFF")
+                print("controlller: \(self.controller)")
+                //Manager.userPresent = false
+                if (self.beaconRegion != nil) {
+                self.locationManager.stopMonitoring(for: self.beaconRegion!)
+                }
+                self.controller = true
+                self.handleOutsideRegion()
+                break
+                /* case CBManagerState.resetting:
+                 isBTConnected = false
+                 //statusCheck = "No"
+                 
+                 break
+                 case CBManagerState.unauthorized:
+                 self.locationManager.requestAlwaysAuthorization()
+                 isBTConnected = false
+                 //statusCheck = "No"
+                 
+                 break
+                 case CBManagerState.unsupported:
+                 displayAlertMessage(message: "Bluetooth Not Supported")
+                 isBTConnected = false
+                 Manager.userPresent = false
+                 //statusCheck = "No"
+                 break
+                 */
+            case CBManagerState.unknown :
+                print("BLUETOOTH state unknown")
+                //Manager.userPresent = false
+                if (self.beaconRegion != nil) {
+                self.locationManager.stopMonitoring(for: self.beaconRegion!)
+                }
+                self.controller = true
+                self.handleUnknownRegion()
+                break
+            default:
+                displayAlertMessage(message: "Bluetooth status Unknown")
+                isBTConnected = false
+                self.controller = true
+                //statusCheck = "No"
+                if (self.beaconRegion != nil) {
+                self.locationManager.stopMonitoring(for: self.beaconRegion!)
+                }
+                self.handleInsideRegion()
+                break
+                
+            }
+        } else {
+            // Fallback on earlier versions
+            switch peripheral.state {
+            case .poweredOn:
+                //isBTConnected = true
+                //statusCheck = "Yes"
+                print("IN BLUETOOTH POWER ON")
+                print("controlller: \(self.controller)")
+                if (self.beaconRegion != nil) {
+                self.locationManager.startMonitoring(for: self.beaconRegion!)
+                }
+                break
+            case .poweredOff:
+                //isBTConnected = false
+                //statusCheck = "No"
+                print("IN BLUETOOTH POWER OFF")
+                print("controlller: \(self.controller)")
+                //Manager.userPresent = false
+                if (self.beaconRegion != nil) {
+                self.locationManager.stopMonitoring(for: self.beaconRegion!)
+                }
+                self.controller = true
+                self.handleOutsideRegion()
+                break
+                /* case CBManagerState.resetting:
+                 isBTConnected = false
+                 //statusCheck = "No"
+                 
+                 break
+                 case CBManagerState.unauthorized:
+                 self.locationManager.requestAlwaysAuthorization()
+                 isBTConnected = false
+                 //statusCheck = "No"
+                 
+                 break
+                 case CBManagerState.unsupported:
+                 displayAlertMessage(message: "Bluetooth Not Supported")
+                 isBTConnected = false
+                 Manager.userPresent = false
+                 //statusCheck = "No"
+                 break
+                 */
+            case .unknown :
+                print("BLUETOOTH state unknown")
+                //Manager.userPresent = false
+                if (self.beaconRegion != nil) {
+                self.locationManager.stopMonitoring(for: self.beaconRegion!)
+                }
+                self.controller = true
+                self.handleUnknownRegion()
+                break
+            default:
+                displayAlertMessage(message: "Bluetooth status Unknown")
+                isBTConnected = false
+                self.controller = true
+                //statusCheck = "No"
+                if (self.beaconRegion != nil) {
+                self.locationManager.stopMonitoring(for: self.beaconRegion!)
+                }
+                self.handleInsideRegion()
+                break
+                
+            }
         }
         //self.locationManager.requestState(for: self.beaconRegion)
         
@@ -657,6 +771,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
         self.dismiss(animated: true, completion: nil)
+        UIApplication.shared.keyWindow?.rootViewController = destinationController
         self.present(destinationController, animated: true, completion: nil)
     }
     

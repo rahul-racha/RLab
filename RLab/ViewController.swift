@@ -12,14 +12,10 @@ import SwiftKeychainWrapper
 
 class ViewController: UIViewController, NSURLConnectionDelegate {
 
-    //@IBOutlet weak var _username: UIView!
     @IBOutlet weak var _username: UITextField?
     @IBOutlet weak var _password: UITextField?
     @IBOutlet weak var rememberCredentials: UISwitch!
-    
-    //@IBOutlet weak var headerTopConstraint: NSLayoutConstraint!
-    
-    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
+    //@IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     var keyChainUser: String?
     var keyChainPwd: String?
     var isUsrSaved:Bool = false
@@ -27,9 +23,6 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
     var isUsrRemoved:Bool = true
     var isPwdRemoved:Bool = true
     var bConst: NSLayoutConstraint?
-//    var switchState = Bool()
-//    var userName = String()
-//    var password = String()
     
     func keyboardWillShow(notification: NSNotification) {
        /* if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
@@ -37,12 +30,24 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                 self.view.frame.origin.y -= keyboardSize.height
             }
         }*/
-        let info = notification.userInfo!
-        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+//        let info = notification.userInfo!
+//        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+//        
+//        UIView.animate(withDuration: 0.1, animations: { () -> Void in
+//            self.bottomConstraint.constant = keyboardFrame.size.height + 20
+//        })
         
-        UIView.animate(withDuration: 0.1, animations: { () -> Void in
-            self.bottomConstraint.constant = keyboardFrame.size.height + 20
-        })
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
+            let window = self.view.window?.frame {
+            // We're not just minusing the kb height from the view height because
+            // the view could already have been resized for the keyboard before
+            self.view.frame = CGRect(x: self.view.frame.origin.x,
+                                     y: self.view.frame.origin.y,
+                                     width: self.view.frame.width,
+                                     height: window.origin.y + window.height - keyboardSize.height)
+        } else {
+            debugPrint("We're showing the keyboard and either the keyboard size or window is nil: panic widely.")
+        }
     }
     
     func keyboardWillHide(notification: NSNotification) {
@@ -52,15 +57,23 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                 self.view.frame.origin.y += keyboardSize.height
             }
         }*/
-        let info = notification.userInfo!
-        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
-        
-        UIView.animate(withDuration: 0.1, animations: { () -> Void in
-            if (self.bConst != nil) {
-            self.bottomConstraint.constant = (self.bConst?.constant)!
-            }
-        })
-        
+//        let info = notification.userInfo!
+//        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+//        
+//        UIView.animate(withDuration: 0.1, animations: { () -> Void in
+//            if (self.bConst != nil) {
+//            self.bottomConstraint.constant = (self.bConst?.constant)!
+//            }
+//        })
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let viewHeight = self.view.frame.height
+            self.view.frame = CGRect(x: self.view.frame.origin.x,
+                                     y: self.view.frame.origin.y,
+                                     width: self.view.frame.width,
+                                     height: viewHeight + keyboardSize.height)
+        } else {
+            debugPrint("We're about to hide the keyboard and the keyboard size is nil. Now is the rapture.")
+        }
     }
 
     deinit {
@@ -80,10 +93,6 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
         _password?.text = keyChainPwd!
         }
         rememberCredentials.addTarget(self, action: #selector(setWhenStateChanged(_:)), for: UIControlEvents.valueChanged)
-//        switchState = UserDefaults.standard.bool(forKey: "switchState")
-//        userName = UserDefaults.standard.string(forKey: "keepUsername")!
-//        password = UserDefaults.standard.string(forKey: "keepPassword")!
-        // Do any additional setup after loading the view, typically from a nib.
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -91,7 +100,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
-        self.bConst = self.bottomConstraint
+        //self.bConst = self.bottomConstraint
     }
 
     override func didReceiveMemoryWarning() {
@@ -129,9 +138,9 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
     }
     
     
-    @IBAction func login(_ sender: UIButton) {
-        let username = _username?.text
-        let password = _password?.text
+    @IBAction func login(_ sender: Any) {
+        var username = _username?.text
+        var password = _password?.text
         var user: String?
         //var userData: [String: Any]?
         
@@ -141,6 +150,8 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
             return
         }
         
+        username = username?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        password = password?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             
             let parameters: Parameters = ["username":username! , "password": password!, "deviceid": Manager.deviceId == nil ? "abc" : Manager.deviceId!]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/login.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
@@ -187,16 +198,6 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                                 self.isUsrRemoved = KeychainWrapper.standard.removeObject(forKey: "username")
                                 self.isPwdRemoved = KeychainWrapper.standard.removeObject(forKey: "password")
                             }
-//                            var enteredUser = username!
-//                            var enteredPassword = password!
-//                            var user = PFUser.currentUser()
-//                            UserDefaults.standard.set(enteredUser, forKey: "keepUsername")
-//                            UserDefaults.standard.set(enteredPassword, forKey: "keepPassword")
-//                            UserDefaults.standard.synchronize()
-//                            
-//                            self.actInd.startAnimating()
-//                            PFUser.logInWithUsernameInBackground(username, password: password, block: { (user, NSError) -> Void in
-//                            self.actInd.stopAnimating(
                             
                             let storyboard = UIStoryboard(name: "Main", bundle: nil)
                             let destinationController = storyboard.instantiateViewController(withIdentifier: "tabBarController") as! CustomTabBarController
@@ -211,8 +212,6 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                             Manager.triggerNotifications = true
                             Manager.controlLoadAllCells = false
                             self.present(destinationController, animated: true, completion: nil)
-//                            )
-//                            }
                         }
                         else {
                             self.displayAlertMessage(message: "Invalid username or password")

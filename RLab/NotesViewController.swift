@@ -16,16 +16,16 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
     @IBOutlet weak var toggleAssistant: UISwitch!
     //var refresher: UIRefreshControl!
     var userId: Int?
+    var subrole: String?
     var studentNotes : [Dictionary<String,Any>]?
     var noteId: Int?
     var noteTitle: String?
     var noteDescription: String?
     var newNote: Bool?
     var reload: Bool = true
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        reload = false
         print("i am first")
         self.newNote = false
         // self.toggleAssistant.isOn = Manager.toggleAssistant
@@ -39,14 +39,17 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
             self.toggleAssistant.isHidden = false
             if(self.toggleAssistant.isOn == true) {
                 userId = 6
+                self.subrole = "R.A"
                 Manager.toggleAssistant = true
             }else {
                 userId = 14
+                self.subrole = "T.A"
                 Manager.toggleAssistant = false
             }
         }
         else {
             self.toggleAssistant.isHidden = true
+            self.subrole = Manager.userData?["role"] as? String
             userId = Int(Manager.userData?["userid"] as! String)
         }
         
@@ -54,27 +57,30 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         let parameters: Parameters = ["userid": userId == nil ? 0:userId! ]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
-                
                 if let data = response.data {
                     do {
                         let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! Dictionary<String,Any>
                         self.studentNotes = json["notes_data"] as? [Dictionary<String,Any>]
                         DispatchQueue.main.async(execute: {
-                            
                             self.notesCollectionView.reloadData()
-                            
                         })
                         
                     }
                     catch{
                         //print("error serializing JSON: \(error)")
+                        self.studentNotes = nil
+                        self.notesCollectionView.reloadData()
                     }
                 }
+                
         }
-        // Do any additional setup after loading the view.
+        
+            self.reload = false
+        
     }
     
     @IBAction func refreshView(_ sender: Any) {
+        self.reload = true
         viewDidLoad()
     }
     
@@ -128,10 +134,10 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
     }
 
     @IBAction func deleteNote(_ sender: Any) {
-        let i : Int = ((sender as AnyObject).layer.value(forKey: "cellId")) as! Int
-        print("id \(i)")
+        let idVal : Int = ((sender as AnyObject).layer.value(forKey: "cellId")) as! Int
+        print("id \(idVal)")
         //self.studentNotes.remove(at: i)
-        let parameters: Parameters = ["id": i]
+        let parameters: Parameters = ["id": idVal]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/DeleteNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
@@ -140,7 +146,16 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
                     //let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! Dictionary<String,Any>
                     //self.studentNotes = json["notes_data"] as? [Dictionary<String,Any>]
                     DispatchQueue.main.async(execute: {
+                        if (self.studentNotes != nil) {
+                            for i in 0..<(self.studentNotes?.count)! {
+                                let id = Int((self.studentNotes?[i]["id"] as? String)!)!
+                                if (id == idVal) {
+                                    self.studentNotes?.remove(at: i)
+                                    break
+                                }
+                            }
                         self.viewDidLoad()
+                        }
                         
                     })
                     
@@ -203,6 +218,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let destinationController = storyboard.instantiateViewController(withIdentifier: "EditNoteViewController") as! EditNoteViewController
         destinationController.newNote = self.newNote
+        destinationController.subrole = self.subrole
         self.present(destinationController, animated: true, completion: nil)
     }
     
@@ -222,6 +238,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
+    UIApplication.shared.keyWindow?.rootViewController = destinationController
     self.dismiss(animated: true, completion: nil)
     self.present(destinationController, animated: true, completion: nil)
 

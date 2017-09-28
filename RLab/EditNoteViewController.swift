@@ -19,9 +19,13 @@ class EditNoteViewController: UIViewController, UITextViewDelegate,NSURLConnecti
     var noteTitle: String?
     var noteDescription: String?
     var newNote: Bool?
+    var subrole: String?
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
+    var isScroll: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.isScroll = true
         self.descriptionBox.delegate = self
         self.descriptionBox.text = "Note"
         self.descriptionBox.textColor = UIColor.lightGray
@@ -37,6 +41,9 @@ class EditNoteViewController: UIViewController, UITextViewDelegate,NSURLConnecti
             self.cancelNote = nil
         }
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
@@ -49,16 +56,32 @@ class EditNoteViewController: UIViewController, UITextViewDelegate,NSURLConnecti
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func keyboardWillShow(notification: NSNotification) {
+        if (self.isScroll == true) {
+            adjustHeight(show: true, notification: notification)
+            self.isScroll = false
+        }
     }
-    */
+    
+    func keyboardWillHide(notification: NSNotification) {
+        if (self.isScroll == false) {
+            adjustHeight(show: false, notification: notification)
+            self.isScroll = true
+        }
+    }
+    
+    func adjustHeight(show:Bool, notification:NSNotification) {
+        var userInfo = notification.userInfo!
+        let keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        let animationDurarion = userInfo[UIKeyboardAnimationDurationUserInfoKey] as! TimeInterval
+        let changeInHeight = (keyboardFrame.height) * (show ? 1 : -1)
+        UIView.animate(withDuration: animationDurarion, animations: { () -> Void in
+            self.bottomConstraint.constant += changeInHeight
+            //if self.viewBox.frame.origin.y == 0{
+            //self.viewBox.frame.origin.y += changeInHeight
+            //}
+        })
+    }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == UIColor.lightGray {
@@ -84,7 +107,9 @@ class EditNoteViewController: UIViewController, UITextViewDelegate,NSURLConnecti
             return
         }
         if (self.newNote == true) {
-        let parameters: Parameters = ["userid": userId!,"title":self.titleBox!.text!,"description":self.descriptionBox!.text!]
+            
+            if let sub = self.subrole {
+        let parameters: Parameters = ["userid":userId!,"subrole":sub,"title":self.titleBox!.text!,"description":self.descriptionBox!.text!]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/CreateNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
@@ -101,6 +126,7 @@ class EditNoteViewController: UIViewController, UITextViewDelegate,NSURLConnecti
                     //}
                 }
         }
+            }
       }
     }
     

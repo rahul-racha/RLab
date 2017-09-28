@@ -33,6 +33,7 @@
 		41EEF5BE1E384217001DB052 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5BD1E384217001DB052 /* Assets.xcassets */; };
 		41EEF5C11E384217001DB052 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5BF1E384217001DB052 /* LaunchScreen.storyboard */; };
 		41EEF5C91E3C4F34001DB052 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5C81E3C4F34001DB052 /* Default-568h@2x.png */; };
+		82AD975B1F6F8BB30043A00B /* DesignableX in Resources */ = {isa = PBXBuildFile; fileRef = 82AD975A1F6F8BB30043A00B /* DesignableX */; };
 		EFE867FD38DD9271AD62A05F /* Pods_TLab.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE2B1313204D69E52A0F763 /* Pods_TLab.framework */; };
 /* End PBXBuildFile section */
 
@@ -80,6 +81,7 @@
 		41EEF5C01E384217001DB052 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		41EEF5C21E384217001DB052 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		41EEF5C81E3C4F34001DB052 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		82AD975A1F6F8BB30043A00B /* DesignableX */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignableX; path = "../packages/DesignableX-master/DesignableXTesting/DesignableXTesting/DesignableX"; sourceTree = "<group>"; };
 		DBE2B1313204D69E52A0F763 /* Pods_TLab.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TLab.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC0CBFB0C044DB76BE1DAD88 /* Pods-TLab.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TLab.release.xcconfig"; path = "Pods/Target Support Files/Pods-TLab/Pods-TLab.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -155,6 +157,7 @@
 		41EEF5AA1E384217001DB052 = {
 			isa = PBXGroup;
 			children = (
+				82AD975A1F6F8BB30043A00B /* DesignableX */,
 				41EEF5C81E3C4F34001DB052 /* Default-568h@2x.png */,
 				41EEF5B51E384217001DB052 /* TLab */,
 				41EEF5B41E384217001DB052 /* Products */,
@@ -271,6 +274,7 @@
 			files = (
 				41EEF5C11E384217001DB052 /* LaunchScreen.storyboard in Resources */,
 				41EEF5C91E3C4F34001DB052 /* Default-568h@2x.png in Resources */,
+				82AD975B1F6F8BB30043A00B /* DesignableX in Resources */,
 				41EEF5BE1E384217001DB052 /* Assets.xcassets in Resources */,
 				41EEF5BC1E384217001DB052 /* Main.storyboard in Resources */,
 			);
@@ -483,7 +487,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = Y3BMC87S4X;
 				INFOPLIST_FILE = RLab/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.handson.odu.Tlab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -503,7 +507,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = Y3BMC87S4X;
 				INFOPLIST_FILE = RLab/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.handson.odu.Tlab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
