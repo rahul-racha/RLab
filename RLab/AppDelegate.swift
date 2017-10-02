@@ -14,6 +14,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     var window: UIWindow?
 
+    let statusNotificationKey = "com.Tlab.status"
+    let reloadViewKey = "com.Tlab.reload"
+    let stopAvailabilityKey = "com.Tlab.stop"
 /*    func registerPushNotifications() {
         DispatchQueue.main.async {
             let settings = UNNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
@@ -69,6 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        //NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopAvailabilityKey), object: nil)
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -81,6 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopAvailabilityKey), object: nil)
     }
     
     //func registerForPushNotifications(application: UIApplication) {
@@ -122,13 +127,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print(userInfo)
         let data  = userInfo["aps"] as! [String : Any]
-        if (data["data"] != nil) {
+        if let reloadView = data["reloadView"] as? String {
+            if (reloadView == "Yes") {
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: reloadViewKey), object: nil)
+            } else {
+        if (data["data"] as? [String : Any] != nil) {
             let student: [String: Any] = data["data"] as! [String : Any]
             if (student["userid"] != nil && student["status"] != nil) {
                 //notificationReceived(notification: userInfo)
                 //let aps = userInfo["aps"] as! [String: Any]
                 if (Manager.triggerNotifications == true) {
-                    updateCell(student: student)
+                    //updateCell(student: student)
+                    Manager.controlLoadAllCells = true
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: statusNotificationKey), object: nil, userInfo: student)
+                    Manager.controlLoadAllCells = false
                 }
                 
             }
@@ -136,25 +148,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             completionHandler(UIBackgroundFetchResult.noData);
         }
+            }
+        } else {
+            completionHandler(UIBackgroundFetchResult.noData);
+        }
+        
     }
-    
+    /*
     func updateCell(student: [String: Any]) {
         Manager.controlLoadAllCells = true
         print(student)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        UIApplication.shared.keyWindow?.rootViewController = storyboard.instantiateViewController(withIdentifier: "tabBarController")
-        let tb = UIApplication.shared.keyWindow?.rootViewController as! CustomTabBarController
+        let tb = storyboard.instantiateViewController(withIdentifier: "tabBarController") as! CustomTabBarController
+        UIApplication.shared.keyWindow?.rootViewController = tb
         let nc = tb.viewControllers?[0] as! UINavigationController
         //tb.reloadCell(student: student)
         if nc.topViewController is AvailabilityController {
             let ac = nc.topViewController as! AvailabilityController
-            ac.viewDidLoad()
-            let _ = ac.view
+            //ac.viewDidLoad()
+            //let _ = ac.view
             ac.reloadIndexPath(student: student)
         }
         Manager.controlLoadAllCells = false
     }
-    
+    */
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         
         print("i am not available in simulator \(error)")

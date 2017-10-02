@@ -22,6 +22,7 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
 
     @IBOutlet weak var agileCollectionViewOutlet: UICollectionView!
     @IBOutlet weak var toggleAssistant: UISwitch!
+    let stopMonitoringKey = "com.Tlab.stopMonitoring"
     //var refresher: UIRefreshControl!
     var agileBoardData : [Dictionary<String,Any>]?
     var row_id = 0
@@ -187,6 +188,7 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
 
     @IBAction func logout(_ sender: Any) {
     Manager.triggerNotifications = false
+    NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
     let parameters: Parameters = ["userid": Manager.userData!["userid"]!,"action":"update","availability":"No"]
     Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
     .responseString { response in

@@ -14,6 +14,8 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
     
     @IBOutlet var notesCollectionView: UICollectionView!
     @IBOutlet weak var toggleAssistant: UISwitch!
+    
+    let stopMonitoringKey = "com.Tlab.stopMonitoring"
     //var refresher: UIRefreshControl!
     var userId: Int?
     var subrole: String?
@@ -225,6 +227,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
     
     @IBAction func logout(_ sender: Any) {
         Manager.triggerNotifications = false
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
         let parameters: Parameters = ["userid": Manager.userData!["userid"]!,"action":"update","availability":"No"]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
