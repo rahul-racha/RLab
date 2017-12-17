@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (4.0.1)
+  - BadgeSwift (5.0.1)
   - Charts (3.0.0):
     - Charts/Core (= 3.0.0)
   - Charts/Core (3.0.0)
@@ -7,6 +8,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 4.0)
+  - BadgeSwift (~> 5.0)
   - Charts
   - SwiftKeychainWrapper (from `https://github.com/jrendel/SwiftKeychainWrapper.git`)
 
@@ -21,9 +23,10 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
+  BadgeSwift: 3defa56f504bfb46f2300122c4a565ec9e405c1e
   Charts: beb341928d2135613b4325a6c6aff9f2f6de895e
   SwiftKeychainWrapper: e353c2d5ac22e72ff7c1dc3b1de1f0e7341ba030
 
-PODFILE CHECKSUM: d4ad593a2284f068a208761ad604b608fb3499d0
+PODFILE CHECKSUM: 353ef1ca6e9765069f9b12299fea30ced2fa11ef
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.3.1

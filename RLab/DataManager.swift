@@ -18,6 +18,8 @@ struct Manager {
     static var triggerNotifications: Bool = false
     static var studentDetails : [Dictionary<String,Any>]?
     static var controlLoadAllCells: Bool = false
+    static var isBackground: Bool = false
+    //static var color: UIColor = UIColor.green //: String = "in"
 }
 
 

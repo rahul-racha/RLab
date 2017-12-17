@@ -11,6 +11,7 @@ import UIKit
 enum StatusColor{
     case available
     case unavailable
+    case recitation
     case selection
     case unknown
 }

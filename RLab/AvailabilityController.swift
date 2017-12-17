@@ -44,6 +44,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     var reloadController: Bool?
     var status: Bool?
     var role: String?
+    var beaconChange: String = "out"
+    var isStartMonitoring: Bool = true
     
     @IBOutlet weak var toggleAssistant: UISwitch!
     @IBOutlet var tableView: UITableView!
@@ -61,8 +63,14 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         NotificationCenter.default.addObserver(self, selector: #selector(AvailabilityController.updateAllStatus(_:)), name: .reloadViewKey, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(AvailabilityController.stopAvailability(_:)), name: .stopAvailabilityKey, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(AvailabilityController.stopMonitoringForLogOut(_:)), name: .stopMonitoringKey, object: nil)
-        
+        //NotificationCenter.default.addObserver(self, selector: #selector(AvailabilityController.onTermination(_:)), name: .terminationKey, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(AvailabilityController.onTermination(_:)), name: NSNotification.Name.UIApplicationWillTerminate, object: nil)
         toggleAssistant.addTarget(self, action: #selector(AvailabilityController.viewDidLoad), for: UIControlEvents.valueChanged)
+        //Timer.scheduledTimer(timeInterval: 6,
+//                             target: self,
+//                             selector: #selector(self.requestRegionState),
+//                             userInfo: nil,
+//                             repeats: true)
         
         //self.tableView.addSubview(refresher)
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0);
@@ -86,6 +94,10 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             userId = Int(Manager.userData?["userid"] as! String)
             self.role = Manager.userData?["role"] as! String
         }
+        
+        if (self.role == "T.A") {
+            self.tableView.allowsSelection = false
+        }
         if (Manager.controlLoadAllCells == false) {
         let parameters: Parameters = ["userid": userId! ]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/ChartData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
@@ -98,10 +110,11 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                         DispatchQueue.main.async(execute: {
                             self.isDataReceived = true
                             self.tableView.reloadData()
-                            if (self.beaconRegion != nil) {
-                                self.controller = true
-                                self.locationManager.startMonitoring(for: self.beaconRegion!)
-                            }
+                            //if (self.beaconRegion != nil) {
+                                //self.controller = true
+                                //self.locationManager.startMonitoring(for: self.beaconRegion!)
+                            //}
+                            self.startScanning()
                         })
                         
                     }
@@ -111,37 +124,33 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 }
         }
     }
-        //self.tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "tableViewCell")
-        //self.tableView.register(/*UITableViewCell.self*/TableViewCell.self, forCellReuseIdentifier: "tableViewCell")
-        //if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
-        self.locationManager.requestAlwaysAuthorization()
-        //}
+        
         self.locationManager.delegate = self
-        self.beaconRegion?.notifyOnEntry = true;
-        self.beaconRegion?.notifyOnExit = true;
-        self.beaconRegion?.notifyEntryStateOnDisplay = true;
+        self.locationManager.requestAlwaysAuthorization()
+        //self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        //self.locationManager.allowsBackgroundLocationUpdates = true
         
         
-        if let installedBeaconUUID = Manager.userData?["beacon_uuid"] as? String {
-        if let uuid = UUID(uuidString: installedBeaconUUID) {
-            if let maj = Manager.userData?["beacon_major"] as? Int, let min = Manager.userData?["beacon_minor"] as? Int {
-                self.beaconRegion = CLBeaconRegion(
-                    proximityUUID: uuid,
-                    major: CLBeaconMajorValue(maj),
-                    minor: CLBeaconMinorValue(min),
-                    identifier: "handsOnBeacon")
-                print("assigned min and maj")
-            } else {
-                self.beaconRegion = CLBeaconRegion(
-                    proximityUUID: uuid,
-                    identifier: "handsOnBeacon")
-                print("no min no maj")
-            }
-        }
-        }
-        if (self.beaconRegion != nil) {
-        self.locationManager.startMonitoring(for: self.beaconRegion!)
-        }
+//        if let installedBeaconUUID = Manager.userData?["beacon_uuid"] as? String {
+//        if let uuid = UUID(uuidString: installedBeaconUUID) {
+//            if let maj = Manager.userData?["beacon_major"] as? Int, let min = Manager.userData?["beacon_minor"] as? Int {
+//                self.beaconRegion = CLBeaconRegion(
+//                    proximityUUID: uuid,
+//                    major: CLBeaconMajorValue(maj),
+//                    minor: CLBeaconMinorValue(min),
+//                    identifier: "handsOnBeacon")
+//                print("assigned min and maj")
+//            } else {
+//                self.beaconRegion = CLBeaconRegion(
+//                    proximityUUID: uuid,
+//                    identifier: "handsOnBeacon")
+//                print("no min no maj")
+//            }
+//        }
+//        }
+//        if (self.beaconRegion != nil) {
+//        self.locationManager.startMonitoring(for: self.beaconRegion!)
+//        }
         //self.locationManager.requestState(for: self.beaconRegion)
         
         //self.locationManager.startRangingBeacons(in: CLBeaconRegion(proximityUUID: NSUUID(uuidString: "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6")! as UUID, identifier: "handsOnBeacon"))
@@ -193,6 +202,17 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
 //        }
 //    }
     
+//    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+//        if (status == .authorizedAlways){
+//            if (CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self)){
+//                if(CLLocationManager.isRangingAvailable()){
+//                    self.startScanning()
+//                }
+//            }
+//        }
+//    }
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -241,16 +261,26 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         viewDidLoad()
     }
     
+    func onTermination(_ notification: Notification) {
+//        if (self.beaconRegion != nil) {
+//            self.locationManager.stopMonitoring(for: self.beaconRegion!)
+//        }
+//        self.handleOutsideRegion()
+        print("******************")
+    }
+    
     func stopMonitoringForLogOut(_ notification: Notification) {
         if (self.beaconRegion != nil) {
             self.locationManager.stopMonitoring(for: self.beaconRegion!)
         }
+        self.handleOutsideRegion()
+        self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
     }
     
     func stopAvailability(_ notification: Notification) {
         self.controller = true
         let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No"]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
+        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
             .responseString { response in
                 //Manager.userPresent = false
                 //self.statusCheck = "No"
@@ -272,6 +302,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                     print(student["role"] as? String)
                     //if (self.role /*Manager.studentDetails?[i]["role"] as? String*/ == student["role"] as? String) {
                     Manager.studentDetails?[i]["status"] = student["status"]
+                    Manager.studentDetails?[i]["location"] = student["location"]
                     let indexPath: IndexPath = IndexPath(row: i, section: 0)
                     self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
                     //}
@@ -302,189 +333,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         }
     }
     */
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        if Manager.studentDetails != nil {
-            return Manager.studentDetails!.count
-        }
-        
-        return 0
-    }
     
-   // func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-   // {
-   //     return 215;//Choose your custom row height
-   // }
     
-    func getDayOfWeek(now:String)->Dictionary<String,String> {
-        var dateWeekPair = [String : String]()
-        
-        let week : [String] = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let todayDate = dateFormatter.date(from: now)
-        let myCalendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
-        let myComponents = myCalendar.components(.weekday, from: todayDate!)
-        let weekDay = myComponents.weekday! - 1
-        let key = dateFormatter.string(from: todayDate!)
-        dateWeekPair[key] = week[weekDay]
-        return dateWeekPair
-    }
-    
-    func setChart(cell: TableViewCell,dataPoints: [String], values: [Double], indexPath: IndexPath) {
-        
-        let mapDaysToAbbr: [String: String] = ["Sun":"Su", "Mon":"M", "Tue":"T", "Wed":"W", "Thu":"Th", "Fri":"F", "Sat":"Sa"]
-        cell.availabilityChartView.noDataText = "Log Data Not Available"
-        //var values: [Double] = [5,7.2,6.1,2,8.5,4.4,7.7,9.1]
-        var weekAbbr = [String]()
-        let formato:BarChartFormatter = BarChartFormatter()
-        let xaxis:XAxis = XAxis()
-        
-        var dataEntries: [BarChartDataEntry] = [BarChartDataEntry]()
-        var xVals = [String]()
-        var weekHours: Double = 0
-        
-        var i = 0
-        for data in dataPoints {
-            let dataEntry = BarChartDataEntry(x: Double(i) ,y: values[i])
-            weekHours = weekHours + values[i]
-            dataEntries.append(dataEntry)
-            if let day = mapDaysToAbbr[data] {
-                weekAbbr.append(day)
-                xVals.append(day)
-            } else {
-                xVals.append("X")
-                weekAbbr.append("X")
-            }
-            _ = formato.stringForValue(Double(i), axis: xaxis)
-            i = i+1
-
-        }
-        formato.setWeek(receivedWeek: weekAbbr)
-        
-        xaxis.valueFormatter = formato
-        
-        cell.weekHours.text = String(round((weekHours-values[values.count-1])*100)/100)
-        
-        //xaxis.drawGridLinesEnabled = false
-        
-        // Make sure that only 1 x-label per index is shown
-        //xaxis.granularityEnabled = true
-        //xaxis.granularity = 0.5
-        
-        //xaxis.spaceMax = 0.4
-        //xaxis.centerAxisLabelsEnabled = true
-        //xaxis.labelCount = 8
-        //xaxis.setLabelCount(8, force: true) //setLabelsToSkip(0)
-        cell.availabilityChartView.xAxis.valueFormatter = xaxis.valueFormatter
-        let chartDataSet: BarChartDataSet = BarChartDataSet(values: dataEntries, label: "Hours")
-        
-        chartDataSet.colors = ChartColorTemplates.pastel()//colorful()
-
-        let chartData = BarChartData()
-        chartData.addDataSet(chartDataSet)
-        chartData.barWidth = 0.2
-        cell.availabilityChartView.data = chartData
-        
-        //cell.availabilityChartView.drawValueAboveBarEnabled = true
-        //cell.availabilityChartView.xAxis.wordWrapEnabled = false
-        cell.availabilityChartView.animate(xAxisDuration: 0.5, yAxisDuration: 0.5, easingOption: .easeInBounce)
-        //chartDataSet.colors = [UIColor(red: 230/255, green: 126/255, blue: 34/255, alpha: 1)]
-        cell.availabilityChartView.notifyDataSetChanged() // MARK : notifyDataSetCanged() prevents Index out of Range error while assigning chartData to cell data
-    
-    }
-
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
-        // Configure the cell...
-        if Manager.studentDetails != nil {
-            cell.name.text=Manager.studentDetails?[indexPath.row]["username"] as? String
-            cell.projects.text = Manager.studentDetails?[indexPath.row]["projects"] as? String
-            /*dispatch_get_global_queue( DispatchQueue.GlobalQueuePriority.default, 0).async(execute: {
-                do {
-                cell.profileImage.image =  UIImage(data: NSData(contentsOf: NSURL(string:"http://upload.wikimedia.org/wikipedia/en/4/43/Apple_Swift_Logo.png") as! URL) as Data)
-                } catch {
-                     cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
-                }
-            })*/
-            cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
-            if (Manager.studentDetails?[indexPath.row]["image"] != nil) {
-                DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
-                    let url = URL(string: (Manager.studentDetails?[indexPath.row]["image"] as? String)!)
-                    if (url != nil) {
-                        let data = try? Data(contentsOf: url!)
-                        if (data != nil) {
-                            DispatchQueue.main.async{
-                                cell.profileImage.image = UIImage(data: data!)
-                            }
-                        } else {
-                            cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
-                        }
-                    }  else {
-                        cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
-                    }
-                }
-            }
-            
-            
-            cell.backgroundColor = UIColor.clear
-            if Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes" {
-                cell.studentActivityStatus(status: StatusColor.available)
-                cell.weekHours.textColor = UIColor.blue
-            } else {
-                cell.studentActivityStatus(status: StatusColor.unknown)
-                cell.weekHours.textColor = UIColor.white
-            }
-            
-            cell.availabilityChartView.noDataText = "Availability Info Not Found"
-            let xData: [String] = (Manager.studentDetails?[indexPath.row]["xLabels"] as? [String])!
-            print(xData)
-            let yData: [Double] = (Manager.studentDetails?[indexPath.row]["value"] as? [Double])!
-            self.setChart(cell: cell, dataPoints: xData, values: yData, indexPath: indexPath)
-        } else {
-            cell.name.text = "student" + String(indexPath.row)
-            cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
-            
-            cell.backgroundColor = UIColor.clear
-            cell.studentActivityStatus(status: StatusColor.unknown)
-            cell.weekHours.textColor = UIColor.white
-            cell.availabilityChartView.noDataText = "Availability Info Not Found"
-
-        }
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
-        
-        cell.backgroundColor = UIColor.clear
-        if Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes" {
-            cell.studentActivityStatus(status: StatusColor.available)
-            cell.weekHours.textColor = UIColor.blue
-            self.status = true
-        } else {
-            cell.studentActivityStatus(status: StatusColor.selection)
-            cell.weekHours.textColor = UIColor.blue
-            self.status = false
-        }
-        self.reloadController = true
-        self.userName = Manager.studentDetails?[indexPath.row]["username"] as? String//currentCell.textLabel?.text
-        self.userId = Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!)!
-        performSegue(withIdentifier: "LogViewController", sender: self)
-
-    }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if (segue.identifier == "LogViewController") {
-            // initialize new view controller and cast it as your view controller
-            let logViewController = segue.destination as! LogViewController
-            // your new view controller should have property that will store passed value
-            logViewController.userName = self.userName!
-            logViewController.userId = self.userId!
-            logViewController.status = self.status!
-        }
-    }
     
     
     // *****************************************************
@@ -519,13 +369,113 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     //  *********************************************************
     
+    func requestRegionState() {
+        if (self.isStartMonitoring == true) {
+            self.locationManager.requestState(for: self.beaconRegion!)
+        }
+    }
+    
+    func startScanning() {
+        if let identifier = Manager.userData?["beacon_uuid"] as? String {
+            let uuid = UUID(uuidString: identifier)!
+            self.beaconRegion = CLBeaconRegion(proximityUUID: uuid, identifier: "handsOnBeacon")
+            self.beaconRegion?.notifyOnEntry = true;
+            self.beaconRegion?.notifyOnExit = true;
+            self.beaconRegion?.notifyEntryStateOnDisplay = true;
+            //self.locationManager.startUpdatingLocation()
+            //locationManager.startMonitoring(for: beaconRegion!)
+            locationManager.startRangingBeacons(in: beaconRegion!)
+        }
+    }
+
+    
     func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-    print("Started Monitoring Successfully!")
+        print("Started Monitoring Successfully!")
         print(region)
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-        self.controller = true
-        self.locationManager.requestState(for: region)
-    })
+        self.isStartMonitoring = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+            self.controller = true
+            self.locationManager.requestState(for: region)
+        })
+    }
+    
+    
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        print("Number of Beacons founds:",beacons.count)
+        var flag = "false"
+        var min: NSNumber = -1
+        var maj: NSNumber = -1
+        var location: String = "empty"
+        if beacons.count > 0 {
+            
+            if let identifier = Manager.userData?["beacon_uuid"] as? String {
+                let uuid = UUID(uuidString: identifier)!
+                    for b in beacons{
+                        if (b.major == 1 && b.minor == 28) {
+                            location = "recitation"
+                            min = b.minor
+                            maj = b.major
+                            print("recitation")
+                            break
+                        } else if (b.major == 1 && (b.minor == 26 || b.minor == 27)) {
+                            print("lab")
+                            min = b.minor
+                            maj = b.major
+                            location = "lab"
+                            break
+                        } else {
+                            print("ELSE ")
+                            //min = b.minor /// MARK: make this empty
+                            //maj = b.major /// MARK: make this empty
+                            location = "outside"
+                            break
+                        }
+                        
+                    }
+                if (location != "outside") {
+                    self.beaconRegion = CLBeaconRegion(
+                    proximityUUID: uuid,
+                    major: CLBeaconMajorValue(maj),//CLBeaconMajorValue(1),
+                    minor: CLBeaconMinorValue(min),//CLBeaconMinorValue(28),
+                    identifier: "handsOnBeacon")
+                    self.beaconRegion?.notifyOnEntry = true;
+                    self.beaconRegion?.notifyOnExit = true;
+                    self.beaconRegion?.notifyEntryStateOnDisplay = true;
+                }
+                print("PRINTING REGION")
+                print(self.beaconRegion)
+                
+                if (location != self.beaconChange) {
+                    flag = "true"
+                } else {
+                    flag = "false"
+                }
+                
+                if (location == "recitation") {
+                    self.beaconChange = "recitation"
+                } else if (location == "lab") {
+                    self.beaconChange = "lab"
+                } else if (location == "outside") {
+                    self.beaconChange = "outside"
+                }
+                
+                if (flag == "true") {
+                    if (location == "outside") {
+                        self.handleOutsideRegion()
+                    } else {
+                        print("I AM MONOTORING NOW")
+                        locationManager.startMonitoring(for: beaconRegion!)
+                    }
+                }
+                
+            }
+        } else {
+            if ("outside" != self.beaconChange) {
+                self.beaconChange = "outside"
+                //locationManager.startMonitoring(for: beaconRegion!)
+                self.handleOutsideRegion()
+            }
+        }
     }
     
     /*
@@ -561,8 +511,10 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     */
     
     func handleInsideRegion() {
-        let parameters: Parameters = ["userid":self.deviceUserId!,"action":"insert","availability":"Yes"]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
+        if (self.beaconChange != "out") {
+        print("****************************** \(self.beaconChange)")
+        let parameters: Parameters = ["userid":self.deviceUserId!,"action":"insert","availability":"Yes", "location": self.beaconChange]
+        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 //self.statusCheck = "Yes"
                 //Manager.userPresent = true
@@ -574,12 +526,14 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                     //self.row_id = Int(id[1])!
                 }
         }
+        }
         
     }
     
     func handleOutsideRegion() {
-        let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No"]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
+        if (self.beaconChange != "out") {
+        let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No", "location": "outside"]
+        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
             .responseString { response in
                 //Manager.userPresent = false
                 //self.statusCheck = "No"
@@ -589,11 +543,14 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                     //Manager.userPresent = false
                 }
         }
+        }
     }
     
     func handleUnknownRegion() {
-        let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"Yes"]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
+        print("UNKNOWN REGION")
+        if (self.beaconChange != "out") {
+        let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No", "location": "outside"]
+        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 //Manager.userPresent = false
                 if let data = response.result.value {
@@ -602,57 +559,64 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 }
                 //}
         }
+        }
     }
     
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        if let beaconRegion = region as? CLBeaconRegion {
-            print("DID ENTER REGION: uuid: \(beaconRegion.proximityUUID.uuidString)")
-            print("controlller: \(self.controller)")
-            //let userId = Manager.userData!["userid"]!
-            // if (Manager.userPresent == false) {
-            if (self.controller == false) {
-                print("Inside Enter reg \(self.statusCheck)")
-                self.handleInsideRegion()
-                
-            }
-        }
-    }
+//    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+//        if let beaconRegion = region as? CLBeaconRegion {
+//            print("DID ENTER REGION: uuid: \(beaconRegion.proximityUUID.uuidString)")
+//            print("controlller: \(self.controller)")
+//            //let userId = Manager.userData!["userid"]!
+//            // if (Manager.userPresent == false) {
+//            if (self.controller == false) {
+//                print("Inside Enter reg \(self.statusCheck)")
+//                self.handleInsideRegion()
+//                
+//            }
+//        }
+//    }
 
 
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        if let beaconRegion = region as? CLBeaconRegion {
-            print("DID EXIT REGION: uuid: \(beaconRegion.proximityUUID.uuidString)")
-            print("controlller: \(self.controller)")
-            //let userId = Manager.userData!["userid"]!
-            //  if (Manager.userPresent == true) {
-            //let parameters: Parameters = ["userid":userId,"action":"update","id":self.row_id]
-            if (self.controller == false) {
-                print("Inside exit reg \(self.statusCheck)")
-                self.handleOutsideRegion()
-            }
-        }
-    }
+//    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+//        if let beaconRegion = region as? CLBeaconRegion {
+//            print("DID EXIT REGION: uuid: \(beaconRegion.proximityUUID.uuidString)")
+//            print("controlller: \(self.controller)")
+//            //let userId = Manager.userData!["userid"]!
+//            //  if (Manager.userPresent == true) {
+//            //let parameters: Parameters = ["userid":userId,"action":"update","id":self.row_id]
+//            if (self.controller == false) {
+//                print("Inside exit reg \(self.statusCheck)")
+//                self.handleOutsideRegion()
+//            }
+//        }
+//    }
 
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        print("Error monitoring: \(error.localizedDescription)")
-        
-        //self.statusCheck = "No"
-        print("Error location manager \(self.statusCheck)")
-        
-        //let userId = Manager.userData!["userid"]!
-        
-        // if (Manager.userPresent == true) {
-        //let parameters: Parameters = ["userid":userId,"action":"update","id":self.row_id]
-        //if (self.controller == false) {
-        self.controller = true
-        self.handleUnknownRegion()
-        
-    }
+//    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+//        print("Error monitoring: \(error.localizedDescription)")
+//        
+//        //self.statusCheck = "No"
+//        print("Error location manager \(self.statusCheck)")
+//        
+//        //let userId = Manager.userData!["userid"]!
+//        
+//        // if (Manager.userPresent == true) {
+//        //let parameters: Parameters = ["userid":userId,"action":"update","id":self.row_id]
+//        //if (self.controller == false) {
+//        self.controller = true
+//        self.handleUnknownRegion()
+//        
+//    }
 
 
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        
+        print("minor")
+        print(region.value(forKey: "minor"))
+        print("major")
+        print(region.value(forKey: "major"))
+        print("OKay in diddetemine")
+        print(CLRegion.self)
         //let userId = Manager.userData!["userid"]!
+        
         switch state {
             
         case .unknown:
@@ -676,6 +640,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             
         case .inside:
             //self.statusCheck = "Yes"
+             print("Inside Det State IN")
             print("controlller: \(self.controller)")
             //  if (Manager.userPresent == false) {
             //let parameters: Parameters = ["userid":userId,"action":"update","id":self.row_id]
@@ -715,7 +680,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 print("IN BLUETOOTH POWER ON")
                 print("controlller: \(self.controller)")
                 if (self.beaconRegion != nil) {
-                self.locationManager.startMonitoring(for: self.beaconRegion!)
+                //self.locationManager.startMonitoring(for: self.beaconRegion!)
                 }
                 break
             case CBManagerState.poweredOff:
@@ -782,6 +747,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 }
                 break
             case .poweredOff:
+                
+                self.isStartMonitoring = false
                 //isBTConnected = false
                 //statusCheck = "No"
                 print("IN BLUETOOTH POWER OFF")
@@ -837,6 +804,203 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         
     }
     
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // #warning Incomplete implementation, return the number of rows
+        if Manager.studentDetails != nil {
+            return Manager.studentDetails!.count
+        }
+        
+        return 0
+    }
+    
+    // func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    // {
+    //     return 215;//Choose your custom row height
+    // }
+    
+    func getDayOfWeek(now:String)->Dictionary<String,String> {
+        var dateWeekPair = [String : String]()
+        
+        let week : [String] = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let todayDate = dateFormatter.date(from: now)
+        let myCalendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
+        let myComponents = myCalendar.components(.weekday, from: todayDate!)
+        let weekDay = myComponents.weekday! - 1
+        let key = dateFormatter.string(from: todayDate!)
+        dateWeekPair[key] = week[weekDay]
+        return dateWeekPair
+    }
+    
+    func setChart(cell: TableViewCell,dataPoints: [String], values: [Double], indexPath: IndexPath) {
+        
+        let mapDaysToAbbr: [String: String] = ["Sun":"Su", "Mon":"M", "Tue":"T", "Wed":"W", "Thu":"Th", "Fri":"F", "Sat":"Sa"]
+        cell.availabilityChartView.noDataText = "Log Data Not Available"
+        //var values: [Double] = [5,7.2,6.1,2,8.5,4.4,7.7,9.1]
+        var weekAbbr = [String]()
+        let formato:BarChartFormatter = BarChartFormatter()
+        let xaxis:XAxis = XAxis()
+        
+        var dataEntries: [BarChartDataEntry] = [BarChartDataEntry]()
+        var xVals = [String]()
+        var weekHours: Double = 0
+        
+        var i = 0
+        for data in dataPoints {
+            let dataEntry = BarChartDataEntry(x: Double(i) ,y: values[i])
+            weekHours = weekHours + values[i]
+            dataEntries.append(dataEntry)
+            if let day = mapDaysToAbbr[data] {
+                weekAbbr.append(day)
+                xVals.append(day)
+            } else {
+                xVals.append("X")
+                weekAbbr.append("X")
+            }
+            _ = formato.stringForValue(Double(i), axis: xaxis)
+            i = i+1
+            
+        }
+        formato.setWeek(receivedWeek: weekAbbr)
+        
+        xaxis.valueFormatter = formato
+        
+        cell.weekHours.text = String(round((weekHours-values[values.count-1])*100)/100)
+        
+        //xaxis.drawGridLinesEnabled = false
+        
+        // Make sure that only 1 x-label per index is shown
+        //xaxis.granularityEnabled = true
+        //xaxis.granularity = 0.5
+        
+        //xaxis.spaceMax = 0.4
+        //xaxis.centerAxisLabelsEnabled = true
+        //xaxis.labelCount = 8
+        //xaxis.setLabelCount(8, force: true) //setLabelsToSkip(0)
+        cell.availabilityChartView.xAxis.valueFormatter = xaxis.valueFormatter
+        let chartDataSet: BarChartDataSet = BarChartDataSet(values: dataEntries, label: "Hours")
+        
+        chartDataSet.colors = ChartColorTemplates.pastel()//colorful()
+        
+        let chartData = BarChartData()
+        chartData.addDataSet(chartDataSet)
+        chartData.barWidth = 0.2
+        cell.availabilityChartView.data = chartData
+        
+        //cell.availabilityChartView.drawValueAboveBarEnabled = true
+        //cell.availabilityChartView.xAxis.wordWrapEnabled = false
+        cell.availabilityChartView.animate(xAxisDuration: 0.5, yAxisDuration: 0.5, easingOption: .easeInBounce)
+        //chartDataSet.colors = [UIColor(red: 230/255, green: 126/255, blue: 34/255, alpha: 1)]
+        cell.availabilityChartView.notifyDataSetChanged() // MARK : notifyDataSetCanged() prevents Index out of Range error while assigning chartData to cell data
+        
+    }
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
+        // Configure the cell...
+        if Manager.studentDetails != nil {
+            cell.name.text=Manager.studentDetails?[indexPath.row]["username"] as? String
+            cell.projects.text = Manager.studentDetails?[indexPath.row]["projects"] as? String
+            /*dispatch_get_global_queue( DispatchQueue.GlobalQueuePriority.default, 0).async(execute: {
+             do {
+             cell.profileImage.image =  UIImage(data: NSData(contentsOf: NSURL(string:"http://upload.wikimedia.org/wikipedia/en/4/43/Apple_Swift_Logo.png") as! URL) as Data)
+             } catch {
+             cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
+             }
+             })*/
+            cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
+            if (Manager.studentDetails?[indexPath.row]["image"] != nil) {
+                DispatchQueue.global(qos: DispatchQoS.QoSClass.default).async {
+                    let url = URL(string: (Manager.studentDetails?[indexPath.row]["image"] as? String)!)
+                    if (url != nil) {
+                        let data = try? Data(contentsOf: url!)
+                        if (data != nil) {
+                            DispatchQueue.main.async{
+                                cell.profileImage.image = UIImage(data: data!)
+                            }
+                        } else {
+                            cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
+                        }
+                    }  else {
+                        cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
+                    }
+                }
+            }
+            
+            
+            cell.backgroundColor = UIColor.clear
+            if (Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes") {
+                if (Manager.studentDetails?[indexPath.row]["location"] as? String == "lab") {
+                    cell.studentActivityStatus(status: StatusColor.available)
+                } else if (Manager.studentDetails?[indexPath.row]["location"] as? String == "recitation") {
+                    cell.studentActivityStatus(status: StatusColor.recitation)
+                }
+                cell.weekHours.textColor = UIColor.blue
+            } else {
+                cell.studentActivityStatus(status: StatusColor.unknown)
+                cell.weekHours.textColor = UIColor.white
+            }
+            if (self.role == "T.A") {
+                cell.availabilityChartView.isHidden = true
+            }
+            cell.availabilityChartView.noDataText = "Availability Info Not Found"
+            let xData: [String] = (Manager.studentDetails?[indexPath.row]["xLabels"] as? [String])!
+            print(xData)
+            let yData: [Double] = (Manager.studentDetails?[indexPath.row]["value"] as? [Double])!
+            self.setChart(cell: cell, dataPoints: xData, values: yData, indexPath: indexPath)
+        } else {
+            cell.name.text = "student" + String(indexPath.row)
+            cell.profileImage.image = #imageLiteral(resourceName: "labimg.jpeg")
+            
+            cell.backgroundColor = UIColor.clear
+            cell.studentActivityStatus(status: StatusColor.unknown)
+            cell.weekHours.textColor = UIColor.white
+            cell.availabilityChartView.noDataText = "Availability Info Not Found"
+            
+        }
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
+        if (self.role != "T.A") {
+            cell.backgroundColor = UIColor.clear
+            if Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes" {
+                if (Manager.studentDetails?[indexPath.row]["location"] as? String == "lab") {
+                    cell.studentActivityStatus(status: StatusColor.available)
+                } else if (Manager.studentDetails?[indexPath.row]["location"] as? String == "recitation") {
+                    cell.studentActivityStatus(status: StatusColor.recitation)
+                }
+                
+                cell.weekHours.textColor = UIColor.blue
+                self.status = true
+            } else {
+                cell.studentActivityStatus(status: StatusColor.selection)
+                cell.weekHours.textColor = UIColor.blue
+                self.status = false
+            }
+            self.reloadController = true
+            self.userName = Manager.studentDetails?[indexPath.row]["username"] as? String//currentCell.textLabel?.text
+            self.userId = Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!)!
+            performSegue(withIdentifier: "LogViewController", sender: self)
+        }
+        
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if (segue.identifier == "LogViewController") {
+            // initialize new view controller and cast it as your view controller
+            let logViewController = segue.destination as! LogViewController
+            // your new view controller should have property that will store passed value
+            logViewController.userName = self.userName!
+            logViewController.userId = self.userId!
+            logViewController.status = self.status!
+        }
+    }
+
+    
     
     @IBAction func logout(_ sender: Any) {
         //MARK : RequestState and then
@@ -846,18 +1010,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         if (self.beaconRegion != nil) {
             self.locationManager.stopMonitoring(for: self.beaconRegion!)
         }
-        let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No"]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
-            .responseString { response in
-                //Manager.userPresent = false
-                if let data = response.result.value {
-                    print("*******\(data)****")
-                    //Manager.userPresent = false
-                }
-                //}
-                
-        }
-        
+        self.handleOutsideRegion()
+        self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
         self.dismiss(animated: true, completion: nil)
@@ -873,4 +1027,5 @@ extension Notification.Name {
     static let reloadViewKey = Notification.Name("com.Tlab.reload")
     static let stopAvailabilityKey = Notification.Name("com.Tlab.stop")
     static let stopMonitoringKey = Notification.Name("com.Tlab.stopMonitoring")
+    //static let terminationKey = Notification.Name("com.Tlab.termination")
 }

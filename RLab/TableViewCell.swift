@@ -41,9 +41,17 @@ class TableViewCell: UITableViewCell {
     {
         if (status == StatusColor.available)
         {
-            self.dotView.activeStatusColor(b: UIColor.green)
-        }
-        else if (status == StatusColor.unavailable)
+            //print (Manager.color)
+//            if (Manager.color == "out") {
+//                self.dotView.activeStatusColor(b: UIColor.orange)
+//
+//            } else {
+                self.dotView.activeStatusColor(b: UIColor.green)
+            //}
+        } else if (status == StatusColor.recitation) {
+            self.dotView.activeStatusColor(b: UIColor.orange)
+            
+        } else if (status == StatusColor.unavailable)
         {
             self.dotView.activeStatusColor(b: UIColor.red)
         } else if (status == StatusColor.selection) {

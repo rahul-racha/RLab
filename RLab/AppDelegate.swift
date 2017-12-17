@@ -10,13 +10,14 @@ import UIKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate{
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 
     var window: UIWindow?
-
+    var backgroundTask: UIBackgroundTaskIdentifier?
     let statusNotificationKey = "com.Tlab.status"
     let reloadViewKey = "com.Tlab.reload"
-    let stopAvailabilityKey = "com.Tlab.stop"
+    //let stopAvailabilityKey = "com.Tlab.stop"
+    let stopMonitoringKey = "com.Tlab.stopMonitoring"
 /*    func registerPushNotifications() {
         DispatchQueue.main.async {
             let settings = UNNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
@@ -73,19 +74,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         //NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopAvailabilityKey), object: nil)
+        
+        print("HEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYŪ")
+        Manager.isBackground = true
+        Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.handleBackground), userInfo: nil, repeats: true)
+        print("HERE")
+        handleBackground()
+        
+    }
+    
+    func handleBackground() {
+        print("in handle back")
+        if (Manager.isBackground == true) {
+            print("in handle if true")
+            extendBackgroundTime()
+        }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        Manager.isBackground = false
+        print("IN foreground")
+        
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        print("IN become active")
+        Manager.isBackground = false
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopAvailabilityKey), object: nil)
+        //NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
+        //NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopAvailabilityKey), object: nil)
+        
+        print("HEYYYYOOOOOOOOsDYYYŪ")
+        
     }
     
     //func registerForPushNotifications(application: UIApplication) {
@@ -124,6 +149,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
     //}
     
+    func extendBackgroundTime() {
+        if (self.backgroundTask != nil && self.backgroundTask! != UIBackgroundTaskInvalid) {
+            return
+        }
+        print("Attempting to extend background running time")
+        let self_terminate = true
+        self.backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "extend_ranging", expirationHandler: {
+            print("Background task expired by iOS");
+            if (self_terminate) {
+                UIApplication.shared.endBackgroundTask(self.backgroundTask!)
+                self.backgroundTask = UIBackgroundTaskInvalid
+            }
+        }
+        
+        )
+        print("I am in extend")
+       var _  = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.remainingTime), userInfo: nil, repeats: true)
+        
+    }
+    
+    func remainingTime() {
+        print("Background time remaining = \(UIApplication.shared.backgroundTimeRemaining) seconds")
+    }
+    
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print(userInfo)
         let data  = userInfo["aps"] as! [String : Any]
@@ -149,6 +198,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             completionHandler(UIBackgroundFetchResult.noData);
         }
             }
+            if #available(iOS 10.0, *) {
+                let content = UNMutableNotificationContent()
+                content.badge = 10
+            } else {
+                // Fallback on earlier versions
+            }
+            
         } else {
             completionHandler(UIBackgroundFetchResult.noData);
         }

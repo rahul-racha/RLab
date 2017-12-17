@@ -228,7 +228,8 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
     @IBAction func logout(_ sender: Any) {
         Manager.triggerNotifications = false
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
-        let parameters: Parameters = ["userid": Manager.userData!["userid"]!,"action":"update","availability":"No"]
+        
+        /*let parameters: Parameters = ["userid": Manager.userData!["userid"]!,"action":"update","availability":"No"]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 Manager.userPresent = false
@@ -237,8 +238,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
                     
                 }
                 
-        }
-        
+        }*/
     let storyboard = UIStoryboard(name: "Main", bundle: nil)
     let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
     UIApplication.shared.keyWindow?.rootViewController = destinationController
