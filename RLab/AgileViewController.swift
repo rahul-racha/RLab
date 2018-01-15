@@ -14,37 +14,19 @@ import Foundation
 
 class AgileViewController: UIViewController,UICollectionViewDataSource, UICollectionViewDelegate/*, UICollectionViewDataSourcePrefetching*/, NSURLConnectionDelegate {
     
-    //@available(iOS 10.0, *)
-   // public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-      //  <#code#>
-    //}
-
-
+    
     @IBOutlet weak var agileCollectionViewOutlet: UICollectionView!
     @IBOutlet weak var toggleAssistant: UISwitch!
     let stopMonitoringKey = "com.Tlab.stopMonitoring"
-    //var refresher: UIRefreshControl!
     var agileBoardData : [Dictionary<String,Any>]?
     var row_id = 0
     var userName: String?
-    //var userId: Int?
     var projectName: String?
     var reload: Bool = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //if (Manager.userData!["role"] as! String == "T.A" ) {
-        //    self.tabBarController?.tabBar.isHidden = true
-        //}
         print ("I am HERE in View")
-        
-        //refresher = UIRefreshControl()
-        //refresher.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        //refresher.addTarget(self, action: #selector(AgileViewController.viewDidLoad), for: UIControlEvents.valueChanged)
-        
-        //self.agileCollectionViewOutlet.addSubview(refresher)
-        //self.toggleAssistant.isOn = Manager.toggleAssistant
-        
         toggleAssistant.addTarget(self, action: #selector(AvailabilityController.viewDidLoad), for: UIControlEvents.valueChanged)
         
         Manager.controlData = false
@@ -64,50 +46,48 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
             userId = Int(Manager.userData?["userid"] as! String)
         }
         
-        //let userId = Manager.userData!["userid"]!
-        //print(userId)
         let parameters: Parameters = ["userid":userId!]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetAgileBoardData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseJSON { response in
-
-                if let data = response.data {
-                    do {
-                        let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! Dictionary<String,Any>
-                        self.agileBoardData = json["agileboarddata"] as? [Dictionary<String,Any>]
-                        DispatchQueue.main.async(execute: {
-                            self.agileCollectionViewOutlet.reloadData()
-                        })
-                        
-                    }
-                    catch{
-                        print("error serializing JSON: \(error)")
-                    }
+            
+            if let data = response.data {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! Dictionary<String,Any>
+                    self.agileBoardData = json["agileboarddata"] as? [Dictionary<String,Any>]
+                    DispatchQueue.main.async(execute: {
+                        self.agileCollectionViewOutlet.reloadData()
+                    })
+                    
                 }
+                catch{
+                    print("error serializing JSON: \(error)")
+                }
+            }
         }
         
-
         
-       /* if let tabHeight = self.tabBarController?.tabBar.frame.height{
-            self.agileCollectionViewOutlet?.contentInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.height, left: 10, bottom: tabHeight, right: 10)
-        }else{
-            self.agileCollectionViewOutlet?.contentInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.height, left: 10, bottom: 50, right: 10)
-        }*/
+        
+        /* if let tabHeight = self.tabBarController?.tabBar.frame.height{
+         self.agileCollectionViewOutlet?.contentInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.height, left: 10, bottom: tabHeight, right: 10)
+         }else{
+         self.agileCollectionViewOutlet?.contentInset = UIEdgeInsets(top: UIApplication.shared.statusBarFrame.height, left: 10, bottom: 50, right: 10)
+         }*/
         
         // Register cell classes
         //self.agileCollectionViewOutlet!.register(UINib.init(nibName: "AgileCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "agileCollectionViewCell")
         
         
         // Do any additional setup after loading the view.
-
-       
+        
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
-
+        
         // Register cell classes
         //self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-
+        
         // Do any additional setup after loading the view.
     }
-
+    
     @IBAction func refreshView(_ sender: Any) {
         viewDidLoad()
     }
@@ -120,31 +100,24 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    // MARK: UICollectionViewDataSource
-
-     func numberOfSections(in collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
-
+    
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
         if self.agileBoardData == nil {
             return 1
         } else {
-           return self.agileBoardData!.count
+            return self.agileBoardData!.count
         }
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "agileCollectionViewCell", for: indexPath) as! AgileCollectionViewCell
-
+        
         
         cell.layoutIfNeeded()
         cell.layer.cornerRadius = 8.0
@@ -169,7 +142,7 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
                 
             }
         }
-    
+        
         return cell
     }
     
@@ -185,39 +158,29 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
             destinationViewController.projectName = self.projectName
         }
     }
-
+    
     @IBAction func logout(_ sender: Any) {
-    Manager.triggerNotifications = false
-    NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
-    /*
-    let parameters: Parameters = ["userid": Manager.userData!["userid"]!,"action":"update","availability":"No"]
-    Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
-    .responseString { response in
-    Manager.userPresent = false
-    if let data = response.result.value {
-    print("*******\(data)****")
+        Manager.triggerNotifications = false
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
+        UIApplication.shared.keyWindow?.rootViewController = destinationController
+        self.dismiss(animated: true, completion: nil)
+        self.present(destinationController, animated: true, completion: nil)
+        
     }
-    
-    }*/
-    
-    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-    let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
-    UIApplication.shared.keyWindow?.rootViewController = destinationController
-    self.dismiss(animated: true, completion: nil)
-    self.present(destinationController, animated: true, completion: nil)
-    
-}
     
     
 }
 
 /*extension AgileViewController: UICollectionViewDelegateFlowLayout{
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var collectionViewSize = collectionView.frame.size
-        //collectionViewSize.width = collectionViewSize.width/2
-        collectionViewSize.height = collectionViewSize.height/2.2
-        return collectionViewSize
-}
-}*/
+ 
+ func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+ var collectionViewSize = collectionView.frame.size
+ //collectionViewSize.width = collectionViewSize.width/2
+ collectionViewSize.height = collectionViewSize.height/2.2
+ return collectionViewSize
+ }
+ }*/
 

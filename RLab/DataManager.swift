@@ -11,6 +11,7 @@ import Foundation
 struct Manager {
     
     static var userData: [String: Any]?
+    static var beaconDetails: [[String: Any]]?
     static var userPresent: Bool? = nil
     static var deviceId: String?
     static var controlData: Bool?  // Need to put this in CreateAgileViewController

@@ -38,19 +38,6 @@
 		EFE867FD38DD9271AD62A05F /* Pods_TLab.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE2B1313204D69E52A0F763 /* Pods_TLab.framework */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		41EEF5E71E3E7FF8001DB052 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		219E69AE9B1331AEC3DDB688 /* Pods-TLab.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TLab.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TLab/Pods-TLab.debug.xcconfig"; sourceTree = "<group>"; };
 		4112F15B1E822BF400373351 /* XAxisFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XAxisFormatter.swift; sourceTree = "<group>"; };
@@ -82,6 +69,7 @@
 		41EEF5C01E384217001DB052 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		41EEF5C21E384217001DB052 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		41EEF5C81E3C4F34001DB052 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		827977D31FEC688500B8D49B /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82AD975A1F6F8BB30043A00B /* DesignableX */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignableX; path = "../packages/DesignableX-master/DesignableXTesting/DesignableXTesting/DesignableX"; sourceTree = "<group>"; };
 		82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
 		DBE2B1313204D69E52A0F763 /* Pods_TLab.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TLab.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -159,6 +147,7 @@
 		41EEF5AA1E384217001DB052 = {
 			isa = PBXGroup;
 			children = (
+				827977D31FEC688500B8D49B /* Alamofire.framework */,
 				82AD975A1F6F8BB30043A00B /* DesignableX */,
 				41EEF5C81E3C4F34001DB052 /* Default-568h@2x.png */,
 				41EEF5B51E384217001DB052 /* TLab */,
@@ -217,7 +206,6 @@
 				41EEF5AF1E384217001DB052 /* Sources */,
 				41EEF5B01E384217001DB052 /* Frameworks */,
 				41EEF5B11E384217001DB052 /* Resources */,
-				41EEF5E71E3E7FF8001DB052 /* Embed Frameworks */,
 				38269A2F44F0E48E433152C0 /* [CP] Embed Pods Frameworks */,
 				FD3E740CC225AA8F4555D5D5 /* [CP] Copy Pods Resources */,
 			);
@@ -288,7 +276,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		38269A2F44F0E48E433152C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -312,7 +300,7 @@
 		};
 		B3C1893F99C9A781DA973B90 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -330,7 +318,7 @@
 		};
 		FD3E740CC225AA8F4555D5D5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -438,7 +426,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -483,7 +471,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -496,7 +484,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 219E69AE9B1331AEC3DDB688 /* Pods-TLab.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = RLab/RLab.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
@@ -516,7 +503,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DC0CBFB0C044DB76BE1DAD88 /* Pods-TLab.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = RLab/RLab.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";

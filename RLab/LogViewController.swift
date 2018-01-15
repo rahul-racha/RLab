@@ -14,15 +14,16 @@ class LogViewController: UIViewController,UITableViewDataSource, UITableViewDele
     @IBOutlet weak var logTableView: UITableView!
     var userName: String?
     var userId: Int?
-    var status: Bool?
+    //var status: Bool?
+    var color: UIColor?
     var daysLog: [Dictionary<String,Any>]?
     override func viewDidLoad() {
         super.viewDidLoad()
-     
         // Do any additional setup after loading the view.
         print("log: \(self.userName)!")
         print("log: \(self.userId)!")
-        
+        print("log: \(self.color)!")
+        self.title = self.userName
         let parameters: Parameters = ["userid":userId!]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetAvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
@@ -44,27 +45,11 @@ class LogViewController: UIViewController,UITableViewDataSource, UITableViewDele
         }
         
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
-   /* func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
-    }*/
+    /* func numberOfSections(in tableView: UITableView) -> Int {
+     // #warning Incomplete implementation, return the number of sections
+     return 1
+     }*/
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.daysLog != nil {
@@ -74,11 +59,11 @@ class LogViewController: UIViewController,UITableViewDataSource, UITableViewDele
         return 0
     }
     
-  /*  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    {
-        return 40;//Choose your custom row height
-    }*/
-
+    /*  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+     {
+     return 40;//Choose your custom row height
+     }*/
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "logViewCell", for: indexPath) as! LogViewCell
         
@@ -86,13 +71,7 @@ class LogViewController: UIViewController,UITableViewDataSource, UITableViewDele
             // Configure the cell...
             if(indexPath.row%2 == 0)
             {
-                //print("adfsaff")
-                //cell.backgroundView?.backgroundColor = UIColor.darkGray
-                if self.status == true {
-                cell.backgroundColor = UIColor.green
-                } else {
-                    cell.backgroundColor = UIColor.gray
-                }
+                cell.backgroundColor = self.color
             }
             else{
                 //cell.backgroundView?.backgroundColor = UIColor.cyan
