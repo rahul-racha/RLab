@@ -11,6 +11,7 @@ import Foundation
 struct Manager {
     
     static var userData: [String: Any]?
+    static var beaconDetails: [[String: Any]]?
     static var userPresent: Bool? = nil
     static var deviceId: String?
     static var controlData: Bool?  // Need to put this in CreateAgileViewController
@@ -18,6 +19,8 @@ struct Manager {
     static var triggerNotifications: Bool = false
     static var studentDetails : [Dictionary<String,Any>]?
     static var controlLoadAllCells: Bool = false
+    static var isBackground: Bool = false
+    //static var color: UIColor = UIColor.green //: String = "in"
 }
 
 

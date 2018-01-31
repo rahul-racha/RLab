@@ -11,7 +11,7 @@ import Alamofire
 
 class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextViewDelegate, NSURLConnectionDelegate {
     
- 
+    
     @IBOutlet weak var logTableView: UITableView!
     @IBOutlet weak var newMessage: UITextView!
     var logDetails: [Dictionary<String,Any>]?
@@ -49,7 +49,7 @@ class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -71,7 +71,7 @@ class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         present(alertMsg, animated:true, completion: nil)
         //self.parent?.parent?.dismiss(animated: true, completion: nil)
     }
-
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == UIColor.lightGray {
             textView.text = nil
@@ -104,29 +104,29 @@ class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UpdateTableViewCell", for: indexPath) as! UpdateTableViewCell
         // Configure the cell...
-       
+        
         cell.author.text = (self.logDetails?[indexPath.row]["username"] as? String)! + " " + (self.logDetails?[indexPath.row]["time_posted"] as? String)!
         cell.logMessage.text = self.logDetails?[indexPath.row]["message"] as? String
         
         return cell
     }
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
     
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         // fixed font style. use custom view (UILabel) if you want something different
-    
-            return "Message Log"
+        
+        return "Message Log"
     }
-
+    
     
     @IBAction func updateMessage(_ sender: Any) {
         if (self.newMessage.text.isEmpty) {
@@ -143,9 +143,9 @@ class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITabl
                         print("Data: \(utf8Text)")
                         //if utf8Text.range(of:"EXCEPTION") != nil{
                         //    self.displayAlertMessage(message: "Project Not Created. Enter valid names", isOk: false)
-                       // } else {
-                            // Perform ACTION
-                            self.displayAlertMessage(message: "Project Created", isOk: true)
+                        // } else {
+                        // Perform ACTION
+                        self.displayAlertMessage(message: "Project Created", isOk: true)
                         //}
                         
                         //self.dismiss(animated: true, completion: nil)
@@ -156,5 +156,5 @@ class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
     }
-
+    
 }
