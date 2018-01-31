@@ -35,6 +35,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     @IBOutlet weak var toggleAssistant: UISwitch!
     @IBOutlet var tableView: UITableView!
+    @IBOutlet weak var menuBtnItem: UIBarButtonItem!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +46,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             NSFontAttributeName: UIFont(name: "Avenir-Black", size: 20)!
         ]
         UINavigationBar.appearance().titleTextAttributes = attrs
+        self.menuBtnItem.target = revealViewController()
+        self.menuBtnItem.action = #selector(SWRevealViewController.revealToggle(_:))
         self.locationManager.delegate = self
         self.locationManager.requestAlwaysAuthorization()
         toggleAssistant.addTarget(self, action: #selector(AvailabilityController.viewDidLoad), for: UIControlEvents.valueChanged)
@@ -81,9 +85,9 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             proxyUser = Int(Manager.userData?["userid"] as! String)!
         }
         
-        if (self.role == "T.A" || self.role == "student") {
+        //if (self.role == "T.A" || self.role == "student") {
             self.tableView.allowsSelection = false
-        }
+        //}
         //if (Manager.controlLoadAllCells == false) {
         let parameters: Parameters = ["userid": proxyUser ]
         Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/ChartData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
@@ -774,20 +778,20 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     
     
-    @IBAction func logout(_ sender: Any) {
-        Manager.triggerNotifications = false
-        if (self.beaconRegion != nil) {
-            self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
-            self.locationManager.stopMonitoring(for: self.beaconRegion!)
-        }
-        
-        self.handleOutsideRegion()
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
-        self.dismiss(animated: true, completion: nil)
-        UIApplication.shared.keyWindow?.rootViewController = destinationController
-        self.present(destinationController, animated: true, completion: nil)
-    }
+//    @IBAction func logout(_ sender: Any) {
+//        Manager.triggerNotifications = false
+//        if (self.beaconRegion != nil) {
+//            self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
+//            self.locationManager.stopMonitoring(for: self.beaconRegion!)
+//        }
+//        
+//        self.handleOutsideRegion()
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
+//        self.dismiss(animated: true, completion: nil)
+//        UIApplication.shared.keyWindow?.rootViewController = destinationController
+//        self.present(destinationController, animated: true, completion: nil)
+//    }
     
     
 }

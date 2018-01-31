@@ -16,6 +16,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
     @IBOutlet weak var toggleAssistant: UISwitch!
     
     let stopMonitoringKey = "com.Tlab.stopMonitoring"
+    @IBOutlet weak var menuBtnItem: UIBarButtonItem!
     var userId: Int?
     var subrole: String?
     var studentNotes : [Dictionary<String,Any>]?
@@ -31,6 +32,8 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         self.newNote = false
         
         toggleAssistant.addTarget(self, action: #selector(NotesViewController.viewDidLoad), for: UIControlEvents.valueChanged)
+        self.menuBtnItem.target = revealViewController()
+        self.menuBtnItem.action = #selector(SWRevealViewController.revealToggle(_:))
         if(Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
             self.toggleAssistant.isHidden = false
             if(self.toggleAssistant.isOn == true) {

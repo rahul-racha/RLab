@@ -244,10 +244,12 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                                     }
                                     
                                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                    let destinationController = storyboard.instantiateViewController(withIdentifier: "tabBarController") as! CustomTabBarController
+                                    let destinationController = storyboard.instantiateViewController(withIdentifier: "SWRevealViewController") as! SWRevealViewController
+                                    //let destinationController = storyboard.instantiateViewController(withIdentifier: "tabBarController") as! CustomTabBarController
                                     UIApplication.shared.keyWindow?.rootViewController = destinationController
+                                    let tabBarController = destinationController.frontViewController as! CustomTabBarController
                                     if (Manager.userData?["role"] as! String == "student") {
-                                        let tabBarControllerItems = destinationController.tabBar.items
+                                        let tabBarControllerItems = tabBarController.tabBar.items
                                         if let tabItemsArray = tabBarControllerItems {
                                             tabItemsArray[1].isEnabled = false
                                             tabItemsArray[2].isEnabled = false

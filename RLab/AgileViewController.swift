@@ -18,6 +18,7 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
     @IBOutlet weak var agileCollectionViewOutlet: UICollectionView!
     @IBOutlet weak var toggleAssistant: UISwitch!
     let stopMonitoringKey = "com.Tlab.stopMonitoring"
+    @IBOutlet weak var menuBtnItem: UIBarButtonItem!
     var agileBoardData : [Dictionary<String,Any>]?
     var row_id = 0
     var userName: String?
@@ -28,6 +29,8 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
         super.viewDidLoad()
         print ("I am HERE in View")
         toggleAssistant.addTarget(self, action: #selector(AvailabilityController.viewDidLoad), for: UIControlEvents.valueChanged)
+        self.menuBtnItem.target = revealViewController()
+        self.menuBtnItem.action = #selector(SWRevealViewController.revealToggle(_:))
         
         Manager.controlData = false
         var userId: Int?
@@ -159,17 +162,17 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
         }
     }
     
-    @IBAction func logout(_ sender: Any) {
-        Manager.triggerNotifications = false
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
-        UIApplication.shared.keyWindow?.rootViewController = destinationController
-        self.dismiss(animated: true, completion: nil)
-        self.present(destinationController, animated: true, completion: nil)
-        
-    }
+//    @IBAction func logout(_ sender: Any) {
+//        Manager.triggerNotifications = false
+//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
+//        
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
+//        UIApplication.shared.keyWindow?.rootViewController = destinationController
+//        self.dismiss(animated: true, completion: nil)
+//        self.present(destinationController, animated: true, completion: nil)
+//        
+//    }
     
     
 }

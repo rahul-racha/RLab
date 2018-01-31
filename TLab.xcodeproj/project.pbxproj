@@ -33,6 +33,10 @@
 		41EEF5BE1E384217001DB052 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5BD1E384217001DB052 /* Assets.xcassets */; };
 		41EEF5C11E384217001DB052 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5BF1E384217001DB052 /* LaunchScreen.storyboard */; };
 		41EEF5C91E3C4F34001DB052 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5C81E3C4F34001DB052 /* Default-568h@2x.png */; };
+		820CC7AB201D3A67001830EF /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7AA201D3A67001830EF /* SWRevealViewController.m */; };
+		820CC7AE201D4B55001830EF /* SideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7AD201D4B55001830EF /* SideViewController.swift */; };
+		820CC7B0201E6D9A001830EF /* AddAstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7AF201E6D9A001830EF /* AddAstViewController.swift */; };
+		820CC7B2201E75EB001830EF /* AstTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7B1201E75EB001830EF /* AstTableViewCell.swift */; };
 		82AD975B1F6F8BB30043A00B /* DesignableX in Resources */ = {isa = PBXBuildFile; fileRef = 82AD975A1F6F8BB30043A00B /* DesignableX */; };
 		82BECABB1F88259A00DF8246 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */; };
 		EFE867FD38DD9271AD62A05F /* Pods_TLab.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE2B1313204D69E52A0F763 /* Pods_TLab.framework */; };
@@ -69,6 +73,12 @@
 		41EEF5C01E384217001DB052 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		41EEF5C21E384217001DB052 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		41EEF5C81E3C4F34001DB052 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		820CC7A8201D3A66001830EF /* TLab-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TLab-Bridging-Header.h"; sourceTree = "<group>"; };
+		820CC7A9201D3A67001830EF /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWRevealViewController.h; sourceTree = "<group>"; };
+		820CC7AA201D3A67001830EF /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWRevealViewController.m; sourceTree = "<group>"; };
+		820CC7AD201D4B55001830EF /* SideViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideViewController.swift; sourceTree = "<group>"; };
+		820CC7AF201E6D9A001830EF /* AddAstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddAstViewController.swift; sourceTree = "<group>"; };
+		820CC7B1201E75EB001830EF /* AstTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AstTableViewCell.swift; sourceTree = "<group>"; };
 		827977D31FEC688500B8D49B /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82AD975A1F6F8BB30043A00B /* DesignableX */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignableX; path = "../packages/DesignableX-master/DesignableXTesting/DesignableXTesting/DesignableX"; sourceTree = "<group>"; };
 		82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
@@ -168,9 +178,11 @@
 		41EEF5B51E384217001DB052 /* TLab */ = {
 			isa = PBXGroup;
 			children = (
+				820CC7AC201D3A7A001830EF /* Support */,
 				41B926D81E6E610400A537DE /* RLab.entitlements */,
 				41EEF5B61E384217001DB052 /* AppDelegate.swift */,
 				41EEF5B81E384217001DB052 /* ViewController.swift */,
+				820CC7AD201D4B55001830EF /* SideViewController.swift */,
 				82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */,
 				41B61AD81EE0FD56008865FF /* CustomTabBarController.swift */,
 				41EEF5BA1E384217001DB052 /* Main.storyboard */,
@@ -181,9 +193,21 @@
 				4184E0911E777D3900304630 /* Agile */,
 				41B926D51E6D25F900A537DE /* Availability */,
 				41891AD21EBFBEC300CACF06 /* Notes */,
+				820CC7AF201E6D9A001830EF /* AddAstViewController.swift */,
+				820CC7B1201E75EB001830EF /* AstTableViewCell.swift */,
 			);
 			name = TLab;
 			path = RLab;
+			sourceTree = "<group>";
+		};
+		820CC7AC201D3A7A001830EF /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				820CC7A9201D3A67001830EF /* SWRevealViewController.h */,
+				820CC7AA201D3A67001830EF /* SWRevealViewController.m */,
+				820CC7A8201D3A66001830EF /* TLab-Bridging-Header.h */,
+			);
+			name = Support;
 			sourceTree = "<group>";
 		};
 		FCC8ACC174FA6746554467DB /* Pods */ = {
@@ -231,6 +255,7 @@
 					41EEF5B21E384217001DB052 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = Y3BMC87S4X;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Push = {
@@ -341,6 +366,7 @@
 				4184E0981E77808200304630 /* AgileCollectionViewCell.swift in Sources */,
 				41399F941E5D8BB6000D82B8 /* TableViewCell.swift in Sources */,
 				41B926DD1E70C3F900A537DE /* LogViewController.swift in Sources */,
+				820CC7AB201D3A67001830EF /* SWRevealViewController.m in Sources */,
 				41399F991E5D92F1000D82B8 /* DotView.swift in Sources */,
 				4128F7BA1EC15EB40015097C /* EditNoteViewController.swift in Sources */,
 				41B926EF1E70E3BB00A537DE /* LogViewCell.swift in Sources */,
@@ -353,13 +379,16 @@
 				41D953181ED26B9A0097587E /* UpdateTableViewCell.swift in Sources */,
 				41891AE11EBFCA8A00CACF06 /* NotesCollectionViewCell.swift in Sources */,
 				82BECABB1F88259A00DF8246 /* RegistrationViewController.swift in Sources */,
+				820CC7B2201E75EB001830EF /* AstTableViewCell.swift in Sources */,
 				41EEF5B71E384217001DB052 /* AppDelegate.swift in Sources */,
 				41D953151ED260550097587E /* UpdateAgileViewController.swift in Sources */,
 				41D953101ECCFBC80097587E /* MemberTableViewCell.swift in Sources */,
 				41891ADE1EBFC69C00CACF06 /* NotesViewController.swift in Sources */,
+				820CC7B0201E6D9A001830EF /* AddAstViewController.swift in Sources */,
 				41A989391E7CD7C200778E77 /* AvailabilityChartView.swift in Sources */,
 				4112F15C1E822BF500373351 /* XAxisFormatter.swift in Sources */,
 				4184E09B1E77819900304630 /* AgileViewController.swift in Sources */,
+				820CC7AE201D4B55001830EF /* SideViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,6 +514,7 @@
 			baseConfigurationReference = 219E69AE9B1331AEC3DDB688 /* Pods-TLab.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RLab/RLab.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -494,6 +524,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.handson.odu.Tlab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RLab/TLab-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -504,6 +536,7 @@
 			baseConfigurationReference = DC0CBFB0C044DB76BE1DAD88 /* Pods-TLab.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RLab/RLab.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -513,6 +546,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.handson.odu.Tlab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RLab/TLab-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
