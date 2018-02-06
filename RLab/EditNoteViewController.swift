@@ -110,7 +110,7 @@ class EditNoteViewController: UIViewController, UITextViewDelegate,NSURLConnecti
             
             if let sub = self.subrole {
         let parameters: Parameters = ["userid":userId!,"subrole":sub,"title":self.titleBox!.text!,"description":self.descriptionBox!.text!]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/CreateNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.createNotesService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
                 if let _ = response.data {

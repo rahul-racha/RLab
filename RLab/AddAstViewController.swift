@@ -73,7 +73,7 @@ class AddAstViewController: UIViewController {
     @IBAction func submitAstIDS(_ sender: Any) {
         
         let parameters: Parameters = ["midasIDS": self.midas_list, "roleList": self.roles_selected]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AddAssistant.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
+        Alamofire.request(Manager.addAsstService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 
                 if let data = response.result.value {

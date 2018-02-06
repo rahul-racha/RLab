@@ -203,7 +203,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
     func sLogin(username: String, password: String) {
         
         let parameters: Parameters = ["username":username, "password": password, "deviceid": Manager.deviceId == nil ? "abc" : Manager.deviceId!, "devicetype" : "iOS"]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/loginNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.loginService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseData { response in
                 print("Request:\(response.request)")  // original URL request
                 print("Response:\(response.response)") // HTTP URL response

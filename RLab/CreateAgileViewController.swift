@@ -49,7 +49,7 @@ class CreateAgileViewController: UIViewController, UIPickerViewDataSource, UIPic
         let userId = Int(Manager.userData?["userid"] as! String)
      
         let parameters: Parameters = ["userid": userId! ]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/getUserDetails.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.getUserDetailsService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
                 
@@ -298,7 +298,7 @@ class CreateAgileViewController: UIViewController, UIPickerViewDataSource, UIPic
         print("students: \(self.selectedMembers)")
       
         let parameters: Parameters = ["userid":userid!, "professorid": profid, "project_name": proj!, "message": msg!, "students": students]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/CreateAgileBoardData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
+        Alamofire.request(Manager.createAgileService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
             .responseData { response in
                 DispatchQueue.main.async(execute: {
                     //  self.membersView.reloadData()

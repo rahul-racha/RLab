@@ -57,6 +57,10 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         NotificationCenter.default.addObserver(self, selector: #selector(AvailabilityController.stopMonitoringForLogOut(_:)), name: .stopMonitoringKey, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(AvailabilityController.pingWebService(_:)), name: .pingLogKey, object: nil)
         
+        self.locationManager.allowsBackgroundLocationUpdates = true
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        self.locationManager.distanceFilter = 5000
+        
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0);
         btPeripheralManager = CBPeripheralManager(delegate: self, queue: nil, options: nil)
         
@@ -90,7 +94,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         //}
         //if (Manager.controlLoadAllCells == false) {
         let parameters: Parameters = ["userid": proxyUser ]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/ChartData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.chartDataService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
                 if let data = response.data {
@@ -113,7 +117,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 }
         }
         //}
-        self.locationManager.allowsBackgroundLocationUpdates = true
+        
     }
     
     /*func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -170,6 +174,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         if (self.beaconRegion != nil) {
             self.locationManager.stopMonitoring(for: self.beaconRegion!)
             self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
+            self.locationManager.stopUpdatingLocation()
         }
         self.handleOutsideRegion()
         
@@ -178,7 +183,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     func pingWebService(_ notification: Notification) {
         if (Manager.triggerNotifications == true) {
             let parameters: Parameters = ["user_id":self.deviceUserId!, "user_status": "Yes"]
-            Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/pingServer.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
+            Alamofire.request(Manager.pingServerService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
                 .responseString { response in
                     if let data = response.result.value {
                         print("*******\(data)****")
@@ -190,7 +195,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     func stopAvailability(_ notification: Notification) {
         self.controller = true
         let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No", "location":"outside"]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
+        Alamofire.request(Manager.availabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
             .responseString { response in
                 if let data = response.result.value {
                     self.location = "outside"
@@ -315,7 +320,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     func handleInsideRegion() {
         if (self.preLocation != "out" && self.role != "student" && self.role != "Professor") {
             let parameters: Parameters = ["userid":self.deviceUserId!,"action":"insert","availability":"Yes", "location": self.preLocation]
-            Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
+            Alamofire.request(Manager.availabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
                 .responseString { response in
                     print("Inside Enter reg inside")
                     if let data = response.result.value {
@@ -331,7 +336,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         //if (self.preLocation != "out") {
         if (self.role != "student" && self.role != "Professor") {
             let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No", "location": "outside"]
-            Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
+            Alamofire.request(Manager.availabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
                 .responseString { response in
                     if let data = response.result.value {
                         self.location = "outside"
@@ -346,7 +351,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         //if (self.preLocation != "out") {
         if (self.role != "student" && self.role != "Professor") {
             let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No", "location": "outside"]
-            Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/AvailabilityLogNew.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
+            Alamofire.request(Manager.availabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
                 .responseString { response in
                     if let data = response.result.value {
                         self.location = "outside"
@@ -379,13 +384,13 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
      self.handleOutsideRegion()
      }
      }
-     }*/
+     }
     
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         print("Error monitoring: \(error.localizedDescription)")
         self.controller = true
         self.handleUnknownRegion()
-    }
+    }*/
     
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
@@ -435,10 +440,6 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 print("IN BLUETOOTH POWER ON")
                 print("controlller: \(self.controller)")
                 self.startScanning()
-                //if (self.beaconRegion != nil) {
-                //locationManager.startRangingBeacons(in: beaconRegion!)
-                //self.locationManager.startMonitoring(for: self.beaconRegion!)
-                //}
                 break
             case CBManagerState.poweredOff:
                 print("IN BLUETOOTH POWER OFF")
@@ -446,42 +447,17 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 if (self.beaconRegion != nil) {
                     self.locationManager.stopMonitoring(for: self.beaconRegion!)
                     self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
+                    self.locationManager.stopUpdatingLocation()
                 }
                 //self.controller = true
                 self.handleOutsideRegion()
-                break
-                /* case CBManagerState.resetting:
-                 isBTConnected = false
-                 //statusCheck = "No"
-                 
-                 break
-                 case CBManagerState.unauthorized:
-                 self.locationManager.requestAlwaysAuthorization()
-                 isBTConnected = false
-                 //statusCheck = "No"
-                 
-                 break
-                 case CBManagerState.unsupported:
-                 displayAlertMessage(message: "Bluetooth Not Supported")
-                 isBTConnected = false
-                 Manager.userPresent = false
-                 //statusCheck = "No"
-                 break
-                 */
-            case CBManagerState.unknown :
-                print("BLUETOOTH state unknown")
-                if (self.beaconRegion != nil) {
-                    self.locationManager.stopMonitoring(for: self.beaconRegion!)
-                    self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
-                }
-                //self.controller = true
-                self.handleUnknownRegion()
                 break
             default:
                 displayAlertMessage(message: "Bluetooth status Unknown")
                 if (self.beaconRegion != nil) {
                     self.locationManager.stopMonitoring(for: self.beaconRegion!)
                     self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
+                    self.locationManager.stopUpdatingLocation()
                 }
                 //self.controller = true
                 self.handleUnknownRegion()
@@ -495,10 +471,6 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 print("IN BLUETOOTH POWER ON")
                 print("controlller: \(self.controller)")
                 self.startScanning()
-                //if (self.beaconRegion != nil) {
-                //locationManager.startRangingBeacons(in: beaconRegion!)
-                //self.locationManager.startMonitoring(for: self.beaconRegion!)
-                //}
                 break
             case .poweredOff:
                 print("IN BLUETOOTH POWER OFF")
@@ -506,42 +478,17 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 if (self.beaconRegion != nil) {
                     self.locationManager.stopMonitoring(for: self.beaconRegion!)
                     self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
+                    self.locationManager.stopUpdatingLocation()
                 }
                 //self.controller = true
                 self.handleOutsideRegion()
-                break
-                /* case CBManagerState.resetting:
-                 isBTConnected = false
-                 //statusCheck = "No"
-                 
-                 break
-                 case CBManagerState.unauthorized:
-                 self.locationManager.requestAlwaysAuthorization()
-                 isBTConnected = false
-                 //statusCheck = "No"
-                 
-                 break
-                 case CBManagerState.unsupported:
-                 displayAlertMessage(message: "Bluetooth Not Supported")
-                 isBTConnected = false
-                 Manager.userPresent = false
-                 //statusCheck = "No"
-                 break
-                 */
-            case .unknown :
-                print("BLUETOOTH state unknown")
-                if (self.beaconRegion != nil) {
-                    self.locationManager.stopMonitoring(for: self.beaconRegion!)
-                    self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
-                }
-                //self.controller = true
-                self.handleUnknownRegion()
                 break
             default:
                 displayAlertMessage(message: "Bluetooth status Unknown")
                 if (self.beaconRegion != nil) {
                     self.locationManager.stopMonitoring(for: self.beaconRegion!)
                     self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
+                    self.locationManager.stopUpdatingLocation()
                 }
                 //self.controller = true
                 self.handleUnknownRegion()
@@ -553,19 +500,10 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         var header: String? = nil
-        if (Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
-            if(userId == 6) {
-                header = "RA's in Hands-On Lab"
-            } else {
-                header = "TA's in CS 120/121"
-            }
-            
+        if (self.toggleAssistant.isOn == true) {
+            header = "RA's in Hands-On Lab"
         } else {
-            if (Manager.userData!["role"] as! String == "R.A") {
-                header = "RA's in Hands-On Lab"
-            } else {
-                header = "TA's in CS 120/121"
-            }
+            header = "TA's in CS 120/121"
         }
         return header
     }
@@ -775,24 +713,6 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             logViewController.color = self.color!
         }
     }
-    
-    
-    
-//    @IBAction func logout(_ sender: Any) {
-//        Manager.triggerNotifications = false
-//        if (self.beaconRegion != nil) {
-//            self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
-//            self.locationManager.stopMonitoring(for: self.beaconRegion!)
-//        }
-//        
-//        self.handleOutsideRegion()
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
-//        self.dismiss(animated: true, completion: nil)
-//        UIApplication.shared.keyWindow?.rootViewController = destinationController
-//        self.present(destinationController, animated: true, completion: nil)
-//    }
-    
     
 }
 

@@ -223,7 +223,7 @@ class RegistrationViewController: UIViewController, UIPickerViewDelegate, UIPick
             
             let parameters: Parameters = ["username": self.username.text!, "password": self.password.text!, "role": self.role.text!]
             print(parameters)
-            Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/registerUser.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseData { response in
+            Alamofire.request(Manager.registerUserService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseData { response in
                 DispatchQueue.main.async(execute: {
                     if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
                         print("Data: \(utf8Text)")

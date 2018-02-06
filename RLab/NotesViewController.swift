@@ -53,7 +53,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         }
         
         let parameters: Parameters = ["userid": userId == nil ? 0:userId! ]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.getNotesService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 if let data = response.data {
                     do {
@@ -121,7 +121,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         let idVal : Int = ((sender as AnyObject).layer.value(forKey: "cellId")) as! Int
         print("id \(idVal)")
         let parameters: Parameters = ["id": idVal]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/DeleteNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.delNotesService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
                 if response.data != nil {
@@ -196,16 +196,5 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         destinationController.subrole = self.subrole
         self.present(destinationController, animated: true, completion: nil)
     }
-    
-    
-    @IBAction func logout(_ sender: Any) {
-        Manager.triggerNotifications = false
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
-        UIApplication.shared.keyWindow?.rootViewController = destinationController
-        self.dismiss(animated: true, completion: nil)
-        self.present(destinationController, animated: true, completion: nil)
-        
-    }
+
 }

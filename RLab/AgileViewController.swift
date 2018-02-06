@@ -50,7 +50,7 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
         }
         
         let parameters: Parameters = ["userid":userId!]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetAgileBoardData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseJSON { response in
+        Alamofire.request(Manager.agileBoardService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseJSON { response in
             
             if let data = response.data {
                 do {
@@ -161,19 +161,6 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
             destinationViewController.projectName = self.projectName
         }
     }
-    
-//    @IBAction func logout(_ sender: Any) {
-//        Manager.triggerNotifications = false
-//        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
-//        
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
-//        UIApplication.shared.keyWindow?.rootViewController = destinationController
-//        self.dismiss(animated: true, completion: nil)
-//        self.present(destinationController, animated: true, completion: nil)
-//        
-//    }
-    
     
 }
 
