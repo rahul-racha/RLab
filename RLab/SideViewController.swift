@@ -25,7 +25,7 @@ class SideViewController: UIViewController {
         Manager.triggerNotifications = false
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
+        let destinationController = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
         UIApplication.shared.keyWindow?.rootViewController = destinationController
         self.dismiss(animated: true, completion: nil)
         self.present(destinationController, animated: true, completion: nil)

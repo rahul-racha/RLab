@@ -28,7 +28,7 @@
 		41D953151ED260550097587E /* UpdateAgileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D953141ED260550097587E /* UpdateAgileViewController.swift */; };
 		41D953181ED26B9A0097587E /* UpdateTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D953161ED26B9A0097587E /* UpdateTableViewCell.swift */; };
 		41EEF5B71E384217001DB052 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EEF5B61E384217001DB052 /* AppDelegate.swift */; };
-		41EEF5B91E384217001DB052 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EEF5B81E384217001DB052 /* ViewController.swift */; };
+		41EEF5B91E384217001DB052 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EEF5B81E384217001DB052 /* LoginViewController.swift */; };
 		41EEF5BC1E384217001DB052 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5BA1E384217001DB052 /* Main.storyboard */; };
 		41EEF5BE1E384217001DB052 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5BD1E384217001DB052 /* Assets.xcassets */; };
 		41EEF5C11E384217001DB052 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41EEF5BF1E384217001DB052 /* LaunchScreen.storyboard */; };
@@ -39,6 +39,19 @@
 		820CC7B2201E75EB001830EF /* AstTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7B1201E75EB001830EF /* AstTableViewCell.swift */; };
 		82AD975B1F6F8BB30043A00B /* DesignableX in Resources */ = {isa = PBXBuildFile; fileRef = 82AD975A1F6F8BB30043A00B /* DesignableX */; };
 		82BECABB1F88259A00DF8246 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */; };
+		82E874CB202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C1202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift */; };
+		82E874CC202E4A5E00E2E5C4 /* UITextFieldX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C2202E4A5E00E2E5C4 /* UITextFieldX.swift */; };
+		82E874CD202E4A5E00E2E5C4 /* UIButtonX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C3202E4A5E00E2E5C4 /* UIButtonX.swift */; };
+		82E874CE202E4A5E00E2E5C4 /* UILabelX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C4202E4A5E00E2E5C4 /* UILabelX.swift */; };
+		82E874CF202E4A5E00E2E5C4 /* UIViewAnchorPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C5202E4A5E00E2E5C4 /* UIViewAnchorPoint.swift */; };
+		82E874D0202E4A5E00E2E5C4 /* UIViewControllerX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C6202E4A5E00E2E5C4 /* UIViewControllerX.swift */; };
+		82E874D1202E4A5E00E2E5C4 /* UIImageViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C7202E4A5E00E2E5C4 /* UIImageViewX.swift */; };
+		82E874D2202E4A5E00E2E5C4 /* UIViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C8202E4A5E00E2E5C4 /* UIViewX.swift */; };
+		82E874D3202E4A5E00E2E5C4 /* UIVisualEffectViewX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C9202E4A5E00E2E5C4 /* UIVisualEffectViewX.swift */; };
+		82E874D4202E4A5E00E2E5C4 /* UISliderX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874CA202E4A5E00E2E5C4 /* UISliderX.swift */; };
+		82E8AE95203246640053AE0B /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E8AE94203246640053AE0B /* EditProfileViewController.swift */; };
+		82E8AE97203359C40053AE0B /* ConfigAssistantsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E8AE96203359C40053AE0B /* ConfigAssistantsViewController.swift */; };
+		82E8AE992033C9CE0053AE0B /* ConfigTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E8AE982033C9CE0053AE0B /* ConfigTableViewCell.swift */; };
 		EFE867FD38DD9271AD62A05F /* Pods_TLab.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE2B1313204D69E52A0F763 /* Pods_TLab.framework */; };
 /* End PBXBuildFile section */
 
@@ -67,7 +80,7 @@
 		41D953161ED26B9A0097587E /* UpdateTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateTableViewCell.swift; sourceTree = "<group>"; };
 		41EEF5B31E384217001DB052 /* TLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41EEF5B61E384217001DB052 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		41EEF5B81E384217001DB052 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		41EEF5B81E384217001DB052 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		41EEF5BB1E384217001DB052 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		41EEF5BD1E384217001DB052 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41EEF5C01E384217001DB052 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -82,6 +95,19 @@
 		827977D31FEC688500B8D49B /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82AD975A1F6F8BB30043A00B /* DesignableX */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignableX; path = "../packages/DesignableX-master/DesignableXTesting/DesignableXTesting/DesignableX"; sourceTree = "<group>"; };
 		82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
+		82E874C1202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewXRadialGradient.swift; sourceTree = "<group>"; };
+		82E874C2202E4A5E00E2E5C4 /* UITextFieldX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldX.swift; sourceTree = "<group>"; };
+		82E874C3202E4A5E00E2E5C4 /* UIButtonX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButtonX.swift; sourceTree = "<group>"; };
+		82E874C4202E4A5E00E2E5C4 /* UILabelX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UILabelX.swift; sourceTree = "<group>"; };
+		82E874C5202E4A5E00E2E5C4 /* UIViewAnchorPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewAnchorPoint.swift; sourceTree = "<group>"; };
+		82E874C6202E4A5E00E2E5C4 /* UIViewControllerX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewControllerX.swift; sourceTree = "<group>"; };
+		82E874C7202E4A5E00E2E5C4 /* UIImageViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageViewX.swift; sourceTree = "<group>"; };
+		82E874C8202E4A5E00E2E5C4 /* UIViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewX.swift; sourceTree = "<group>"; };
+		82E874C9202E4A5E00E2E5C4 /* UIVisualEffectViewX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVisualEffectViewX.swift; sourceTree = "<group>"; };
+		82E874CA202E4A5E00E2E5C4 /* UISliderX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UISliderX.swift; sourceTree = "<group>"; };
+		82E8AE94203246640053AE0B /* EditProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
+		82E8AE96203359C40053AE0B /* ConfigAssistantsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigAssistantsViewController.swift; sourceTree = "<group>"; };
+		82E8AE982033C9CE0053AE0B /* ConfigTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigTableViewCell.swift; sourceTree = "<group>"; };
 		DBE2B1313204D69E52A0F763 /* Pods_TLab.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TLab.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC0CBFB0C044DB76BE1DAD88 /* Pods-TLab.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TLab.release.xcconfig"; path = "Pods/Target Support Files/Pods-TLab/Pods-TLab.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -135,8 +161,8 @@
 		41B926D51E6D25F900A537DE /* Availability */ = {
 			isa = PBXGroup;
 			children = (
-				4112F15B1E822BF400373351 /* XAxisFormatter.swift */,
 				41399F8E1E5D8B93000D82B8 /* AvailabilityController.swift */,
+				4112F15B1E822BF400373351 /* XAxisFormatter.swift */,
 				41399F921E5D8BB6000D82B8 /* TableViewCell.swift */,
 				41A989381E7CD7C200778E77 /* AvailabilityChartView.swift */,
 				41399F981E5D92F1000D82B8 /* DotView.swift */,
@@ -178,11 +204,11 @@
 		41EEF5B51E384217001DB052 /* TLab */ = {
 			isa = PBXGroup;
 			children = (
+				82E874C0202E4A5E00E2E5C4 /* DesignableX */,
 				820CC7AC201D3A7A001830EF /* Support */,
 				41B926D81E6E610400A537DE /* RLab.entitlements */,
 				41EEF5B61E384217001DB052 /* AppDelegate.swift */,
-				41EEF5B81E384217001DB052 /* ViewController.swift */,
-				820CC7AD201D4B55001830EF /* SideViewController.swift */,
+				41EEF5B81E384217001DB052 /* LoginViewController.swift */,
 				82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */,
 				41B61AD81EE0FD56008865FF /* CustomTabBarController.swift */,
 				41EEF5BA1E384217001DB052 /* Main.storyboard */,
@@ -190,11 +216,10 @@
 				41EEF5BF1E384217001DB052 /* LaunchScreen.storyboard */,
 				41EEF5C21E384217001DB052 /* Info.plist */,
 				41B926D71E6D316700A537DE /* Model */,
+				82734A2720353AA200576BCB /* SideReveal */,
 				4184E0911E777D3900304630 /* Agile */,
 				41B926D51E6D25F900A537DE /* Availability */,
 				41891AD21EBFBEC300CACF06 /* Notes */,
-				820CC7AF201E6D9A001830EF /* AddAstViewController.swift */,
-				820CC7B1201E75EB001830EF /* AstTableViewCell.swift */,
 			);
 			name = TLab;
 			path = RLab;
@@ -208,6 +233,36 @@
 				820CC7A8201D3A66001830EF /* TLab-Bridging-Header.h */,
 			);
 			name = Support;
+			sourceTree = "<group>";
+		};
+		82734A2720353AA200576BCB /* SideReveal */ = {
+			isa = PBXGroup;
+			children = (
+				820CC7AD201D4B55001830EF /* SideViewController.swift */,
+				820CC7AF201E6D9A001830EF /* AddAstViewController.swift */,
+				820CC7B1201E75EB001830EF /* AstTableViewCell.swift */,
+				82E8AE94203246640053AE0B /* EditProfileViewController.swift */,
+				82E8AE96203359C40053AE0B /* ConfigAssistantsViewController.swift */,
+				82E8AE982033C9CE0053AE0B /* ConfigTableViewCell.swift */,
+			);
+			name = SideReveal;
+			sourceTree = "<group>";
+		};
+		82E874C0202E4A5E00E2E5C4 /* DesignableX */ = {
+			isa = PBXGroup;
+			children = (
+				82E874C1202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift */,
+				82E874C2202E4A5E00E2E5C4 /* UITextFieldX.swift */,
+				82E874C3202E4A5E00E2E5C4 /* UIButtonX.swift */,
+				82E874C4202E4A5E00E2E5C4 /* UILabelX.swift */,
+				82E874C5202E4A5E00E2E5C4 /* UIViewAnchorPoint.swift */,
+				82E874C6202E4A5E00E2E5C4 /* UIViewControllerX.swift */,
+				82E874C7202E4A5E00E2E5C4 /* UIImageViewX.swift */,
+				82E874C8202E4A5E00E2E5C4 /* UIViewX.swift */,
+				82E874C9202E4A5E00E2E5C4 /* UIVisualEffectViewX.swift */,
+				82E874CA202E4A5E00E2E5C4 /* UISliderX.swift */,
+			);
+			path = DesignableX;
 			sourceTree = "<group>";
 		};
 		FCC8ACC174FA6746554467DB /* Pods */ = {
@@ -307,6 +362,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-TLab/Pods-TLab-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/BEMCheckBox/BEMCheckBox.framework",
 				"${BUILT_PRODUCTS_DIR}/BadgeSwift/BadgeSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftKeychainWrapper/SwiftKeychainWrapper.framework",
@@ -314,6 +370,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BEMCheckBox.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BadgeSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftKeychainWrapper.framework",
@@ -366,29 +423,42 @@
 				4184E0981E77808200304630 /* AgileCollectionViewCell.swift in Sources */,
 				41399F941E5D8BB6000D82B8 /* TableViewCell.swift in Sources */,
 				41B926DD1E70C3F900A537DE /* LogViewController.swift in Sources */,
+				82E874D4202E4A5E00E2E5C4 /* UISliderX.swift in Sources */,
 				820CC7AB201D3A67001830EF /* SWRevealViewController.m in Sources */,
+				82E874CC202E4A5E00E2E5C4 /* UITextFieldX.swift in Sources */,
 				41399F991E5D92F1000D82B8 /* DotView.swift in Sources */,
 				4128F7BA1EC15EB40015097C /* EditNoteViewController.swift in Sources */,
+				82E874D0202E4A5E00E2E5C4 /* UIViewControllerX.swift in Sources */,
 				41B926EF1E70E3BB00A537DE /* LogViewCell.swift in Sources */,
 				41399F901E5D8B93000D82B8 /* AvailabilityController.swift in Sources */,
 				41D952F41ECCF65E0097587E /* CreateAgileViewController.swift in Sources */,
+				82E874D2202E4A5E00E2E5C4 /* UIViewX.swift in Sources */,
 				41B61AD91EE0FD56008865FF /* CustomTabBarController.swift in Sources */,
 				41D953131ECF627E0097587E /* ProfTableViewCell.swift in Sources */,
-				41EEF5B91E384217001DB052 /* ViewController.swift in Sources */,
+				41EEF5B91E384217001DB052 /* LoginViewController.swift in Sources */,
 				41399F891E5D70C4000D82B8 /* DataManager.swift in Sources */,
 				41D953181ED26B9A0097587E /* UpdateTableViewCell.swift in Sources */,
 				41891AE11EBFCA8A00CACF06 /* NotesCollectionViewCell.swift in Sources */,
 				82BECABB1F88259A00DF8246 /* RegistrationViewController.swift in Sources */,
 				820CC7B2201E75EB001830EF /* AstTableViewCell.swift in Sources */,
+				82E8AE97203359C40053AE0B /* ConfigAssistantsViewController.swift in Sources */,
 				41EEF5B71E384217001DB052 /* AppDelegate.swift in Sources */,
+				82E874CF202E4A5E00E2E5C4 /* UIViewAnchorPoint.swift in Sources */,
+				82E874D3202E4A5E00E2E5C4 /* UIVisualEffectViewX.swift in Sources */,
+				82E874D1202E4A5E00E2E5C4 /* UIImageViewX.swift in Sources */,
 				41D953151ED260550097587E /* UpdateAgileViewController.swift in Sources */,
+				82E874CD202E4A5E00E2E5C4 /* UIButtonX.swift in Sources */,
 				41D953101ECCFBC80097587E /* MemberTableViewCell.swift in Sources */,
+				82E8AE95203246640053AE0B /* EditProfileViewController.swift in Sources */,
+				82E8AE992033C9CE0053AE0B /* ConfigTableViewCell.swift in Sources */,
 				41891ADE1EBFC69C00CACF06 /* NotesViewController.swift in Sources */,
 				820CC7B0201E6D9A001830EF /* AddAstViewController.swift in Sources */,
 				41A989391E7CD7C200778E77 /* AvailabilityChartView.swift in Sources */,
 				4112F15C1E822BF500373351 /* XAxisFormatter.swift in Sources */,
 				4184E09B1E77819900304630 /* AgileViewController.swift in Sources */,
+				82E874CE202E4A5E00E2E5C4 /* UILabelX.swift in Sources */,
 				820CC7AE201D4B55001830EF /* SideViewController.swift in Sources */,
+				82E874CB202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

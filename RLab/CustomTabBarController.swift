@@ -22,19 +22,7 @@ class CustomTabBarController: UITabBarController {
     }
     
     func reloadCell(student: [String: Any]) {
-        //let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        /*
-        let  navController = self.tabBarController?.viewControllers![0] as! UINavigationController
-        let availVC = navController.viewControllers[0] as! AvailabilityController
-        //let destinationController = storyboard.instantiateViewController(withIdentifier: "AvailabilityController") as! AvailabilityController
-        //destinationController.viewDidLoad()
-        //UIApplication.shared.keyWindow?.rootViewController = storyboard.instantiateViewController(withIdentifier: "AvailabilityController") as! AvailabilityController
-        
-        //let destinationController =  UIApplication.shared.keyWindow?.rootViewController as! AvailabilityController
-        //destinationController.reloadIndexPath(student: student)
-        availVC.reloadIndexPath(student: student)
-        Manager.controlLoadAllCells = false
-         */
+
     }
     /*
     // MARK: - Navigation

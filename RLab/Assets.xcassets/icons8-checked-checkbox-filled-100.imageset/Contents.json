@@ -2,17 +2,15 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "labimg.jpeg",
+      "filename" : "icons8-checked-checkbox-filled-100.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "labimg-1.jpeg",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "labimg-2.jpeg",
       "scale" : "3x"
     }
   ],

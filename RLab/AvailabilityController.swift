@@ -40,7 +40,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = String(describing: Manager.userData?["midas_id"] as! String)
+        self.navigationItem.title = String(describing: Manager.userData?["first_name"] as! String)
         let attrs = [
             NSForegroundColorAttributeName: UIColor.blue,
             NSFontAttributeName: UIFont(name: "Avenir-Black", size: 20)!
@@ -95,7 +95,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         //if (Manager.controlLoadAllCells == false) {
         let parameters: Parameters = ["userid": proxyUser ]
         Alamofire.request(Manager.chartDataService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
-            .responseJSON { response in
+            .responseData { response in
                 
                 if let data = response.data {
                     do {
@@ -103,11 +103,6 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                         Manager.studentDetails = json["student_details"] as? [Dictionary<String,Any>]
                         DispatchQueue.main.async(execute: {
                             self.tableView.reloadData()
-                            //if (self.beaconRegion != nil) {
-                            //self.controller = true
-                            //self.locationManager.startMonitoring(for: self.beaconRegion!)
-                            //}
-                            //self.startScanning()
                         })
                         
                     }
@@ -117,6 +112,9 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 }
         }
         //}
+       
+            Timer.scheduledTimer(timeInterval: 300, target: self, selector: #selector(self.reloadAvailView), userInfo: nil, repeats: true)
+
         
     }
     
@@ -149,6 +147,12 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         self.viewDidLoad()
     }
     
+    func reloadAvailView() {
+        if (Manager.isAppActive == true) {
+            self.viewDidLoad()
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         if (self.reloadController == true) {
             self.viewDidLoad()
@@ -166,7 +170,10 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     func updateAllStatus(_ notification: Notification) {
         //Manager.controlLoadAllCells = false
-        viewDidLoad()
+        print("in reload view fn")
+        if (Manager.isAppActive == true) {
+            viewDidLoad()
+        }
     }
     
     
@@ -205,16 +212,18 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     }
     
     func catchStatusNotification(notification: Notification) {
-        let student = notification.userInfo as! [String : Any]
-        if (Manager.studentDetails != nil) {
-            for i in 0..<Manager.studentDetails!.count {
-                if (Manager.studentDetails?[i]["userid"] as? String == student["userid"] as? String) {
-                    Manager.studentDetails?[i]["status"] = student["status"]
-                    Manager.studentDetails?[i]["location"] = student["location"]
-                    let indexPath: IndexPath = IndexPath(row: i, section: 0)
-                    self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
-                    break
-                    
+        if (Manager.isAppActive == true) {
+            let student = notification.userInfo as! [String : Any]
+            if (Manager.studentDetails != nil) {
+                for i in 0..<Manager.studentDetails!.count {
+                    if (Manager.studentDetails?[i]["userid"] as? String == student["userid"] as? String) {
+                        Manager.studentDetails?[i]["status"] = student["status"]
+                        Manager.studentDetails?[i]["location"] = student["location"]
+                        let indexPath: IndexPath = IndexPath(row: i, section: 0)
+                        self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+                        break
+                        
+                    }
                 }
             }
         }
@@ -676,7 +685,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
+        let cell = tableView.cellForRow(at: indexPath) as! TableViewCell
         cell.backgroundColor = UIColor.clear
         self.color = UIColor.gray
         if Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes" {

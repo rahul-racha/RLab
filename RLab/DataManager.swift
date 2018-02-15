@@ -17,6 +17,7 @@ struct Manager {
     static var toggleAssistant: Bool = false
     static var triggerNotifications: Bool = false
     static var studentDetails : [Dictionary<String,Any>]?
+    static var isAppActive: Bool = false
     //static var isBackground: Bool = false
     
     //web services
@@ -35,6 +36,9 @@ struct Manager {
     static var delNotesService = "http://qav2.cs.odu.edu/karan/LabBoard/DeleteNotes.php"
     static var addAsstService = "http://qav2.cs.odu.edu/karan/LabBoard/AddAssistant.php"
     static var getUserDetailsService = "http://qav2.cs.odu.edu/karan/LabBoard/getUserDetails.php"
+    
+    static var updateProfileService = "http://qav2.cs.odu.edu/karan/LabBoard/EditProfile.php"
+    static var configUserService = "http://qav2.cs.odu.edu/karan/LabBoard/ConfigUsers.php"
 }
 
 

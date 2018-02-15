@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import SwiftKeychainWrapper
 
-class ViewController: UIViewController, NSURLConnectionDelegate {
+class LoginViewController: UIViewController, NSURLConnectionDelegate {
     
     @IBOutlet weak var _username: UITextField?
     @IBOutlet weak var _password: UITextField?
@@ -27,6 +27,8 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
     var isUsrRemoved:Bool = true
     var isPwdRemoved:Bool = true
     var bConst: NSLayoutConstraint?
+    var timerVal: Timer?
+    var counter: Int = 0
     fileprivate var ping1: NSString?
     fileprivate var httpReq: Data?
     
@@ -110,7 +112,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
         return nil
     }
     
-    func displayAlertMessage(message: String) {
+    func displayAlertMessage(title: String, message: String) {
         let alertMsg = UIAlertController(title:"Alert", message: message,
                                          preferredStyle:UIAlertControllerStyle.alert);
         
@@ -125,13 +127,33 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
         var password = _password?.text
         if (username?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (password?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! {
             
-            displayAlertMessage(message: "All fields are required")
+            displayAlertMessage(title: "Validation", message: "All fields are required")
             return
         }
         username = username?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         password = password?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        self.verifyLogin(username: username!, password: password!)
-        //sLogin(username: username!, password: password!)
+        if (timerVal == nil) {
+        timerVal = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.handleTimeOut), userInfo: nil, repeats: true)
+        }
+        //self.verifyLogin(username: username!, password: password!)
+        self.rlabLogin(username: username!, password: password!)
+    }
+    
+    func handleTimeOut() {
+        if (self.counter >= 8) {
+            self.timerVal?.invalidate()
+            self.timerVal = nil
+            self.viewDidLoad()
+            self.view.isUserInteractionEnabled = true
+            self.displayAlertMessage(title: "Time Out", message: "Connection timed out. Check your internet connection and retry")
+            self.counter = 0
+        }
+        self.loadLabel.textColor = UIColor(red:   .random(),
+                                           green: .random(),
+                                           blue:  .random(),
+                                           alpha: 1.0)
+        self.counter = self.counter+1
+        
     }
     
     func verifyLogin(username: String, password: String) {
@@ -140,8 +162,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
         
         let parameters: Parameters = ["j_username": username, "j_password": password]
         print("parameters:\n",parameters)
-        //https://itsapps.odu.edu/auth/
-        //https://my.odu.edu
+
         Alamofire.request("https://itsapps.odu.edu/auth/", method: .get, headers: ["Accept":"text/html; application/vnd.paos+xml","PAOS":"ver='urn:liberty:paos:2003-08';'urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp'"])
             .responseData { response in
                 print("Response 1\n",response)
@@ -151,12 +172,10 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                     let ping1 = NSString(data: dataString as Data, encoding: String.Encoding.ascii.rawValue)!
                     print("Data 1\n",ping1)
                     if (response.response?.statusCode == 200) {
-                        
                         let plainString = "\(username):\(password)"
                         let plainData = plainString.data(using: .utf8)
                         let base64String =  plainData?.base64EncodedString()
                         print("64 ENCODING", base64String!)
-                        //https://shibboleth.odu.edu/idp/profile/SAML2/Redirect/SSO?execution=e2s1
                         Alamofire.request("https://shibboleth.odu.edu/idp/profile/SAML2/SOAP/ECP", method: .post, parameters: ["firstPing":data], encoding: "httpBody", headers: ["Authorization":"Basic \(base64String!)","Content-Type":"text/xml"])
                             .responseData { response in
                                 if let dataNew = response.result.value {
@@ -168,19 +187,19 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                                     print("response code \(response.response?.statusCode)")
                                     //Success
                                     if (dataNew != nil && response.response?.statusCode == 200) {
-                                        self.sLogin(username: username, password: password)
+                                        self.rlabLogin(username: username, password: password)
                                     }
                                     else if (dataNew != nil && response.response?.statusCode == 401){
+                                        self.timerVal?.invalidate()
+                                        self.timerVal = nil
                                         self.loadLabel.isHidden = true
-                                        let alert = UIAlertController(title: "Authencation Failed", message: "The  MIDAS ID and password you entered don't match", preferredStyle: UIAlertControllerStyle.alert)
-                                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                        self.present(alert, animated: true, completion: nil)
+                                        self.displayAlertMessage(title: "Authencation Failed", message: "The  MIDAS ID and password you entered don't match")
                                         self.view.isUserInteractionEnabled = true
                                     }else{
                                         print("failed 2nd call to SOAP")
-                                        let alert = UIAlertController(title: "Authencation Failed", message: "Request to login is Failing, contact your TA", preferredStyle: UIAlertControllerStyle.alert)
-                                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                                        self.present(alert, animated: true, completion: nil)
+                                        self.timerVal?.invalidate()
+                                        self.timerVal = nil
+                                        self.displayAlertMessage(title: "Authencation Failed", message: "Failed to log in. Contact admin.")
                                         self.loadLabel.isHidden = true
                                         self.view.isUserInteractionEnabled = true
                                     }
@@ -188,23 +207,33 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                         }
                     }
                     else{
-                        print("failed 1st call to my.odu.edu")
-                        let alert = UIAlertController(title: "Authencation Failed", message: "ODU Servers are not currently available", preferredStyle: UIAlertControllerStyle.alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                        self.present(alert, animated: true, completion: nil)
+                        print("failed 1st call to itsapps.odu.edu/auth/")
+                        self.timerVal?.invalidate()
+                        self.timerVal = nil
+                        self.displayAlertMessage(title: "Authencation Failed", message: "ODU Servers are not currently available")
                         self.loadLabel.isHidden = true
                         self.view.isUserInteractionEnabled = true
                     }
+                } else {
+                    self.timerVal?.invalidate()
+                    self.timerVal = nil
+                    self.displayAlertMessage(title: "Authencation Failed", message: "Could not connect to the server")
+                    self.loadLabel.isHidden = true
+                    self.view.isUserInteractionEnabled = true
                 }
         }
     }
     
     
-    func sLogin(username: String, password: String) {
+    func rlabLogin(username: String, password: String) {
         
-        let parameters: Parameters = ["username":username, "password": password, "deviceid": Manager.deviceId == nil ? "abc" : Manager.deviceId!, "devicetype" : "iOS"]
+        let parameters: Parameters = ["username":username, "deviceid": Manager.deviceId == nil ? "abc" : Manager.deviceId!, "devicetype" : "iOS"]
         Alamofire.request(Manager.loginService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseData { response in
+                
+                self.timerVal?.invalidate()
+                self.timerVal = nil
+                self.counter = 0
                 print("Request:\(response.request)")  // original URL request
                 print("Response:\(response.response)") // HTTP URL response
                 print("Rsponse data:\(response.data)")
@@ -245,7 +274,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                                     
                                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                                     let destinationController = storyboard.instantiateViewController(withIdentifier: "SWRevealViewController") as! SWRevealViewController
-                                    //let destinationController = storyboard.instantiateViewController(withIdentifier: "tabBarController") as! CustomTabBarController
+
                                     UIApplication.shared.keyWindow?.rootViewController = destinationController
                                     let tabBarController = destinationController.frontViewController as! CustomTabBarController
                                     if (Manager.userData?["role"] as! String == "student") {
@@ -256,22 +285,26 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                                         }
                                     }
                                     Manager.triggerNotifications = true
-                                    //Manager.controlLoadAllCells = false
                                     self.present(destinationController, animated: true, completion: nil)
                                 }
                                 else {
                                     self.view.isUserInteractionEnabled = true
                                     self.loadLabel.isHidden = true
-                                    self.displayAlertMessage(message: "Invalid username or password")
+                                    self.displayAlertMessage(title: "Validation", message: "Username mismatch")
                                     self._username?.text = nil
                                     self._password?.text = nil
-                                    print("invalid username & password")
+                                    print("Username mismatch")
                                 }
                             }
                         } else {
+                            let str = dict["responseKey"] as! String
+                            if (str.range(of: "Exception") != nil) {
+                                self.displayAlertMessage(title: "Authencation Failed", message: str)
+                            } else {
+                                self.displayAlertMessage(title: "Authencation Failed", message: "User info missing")
+                            }
                             self.view.isUserInteractionEnabled = true
                             self.loadLabel.isHidden = true
-                            self.displayAlertMessage(message: "Contact Admin")
                             self._username?.text = nil
                             self._password?.text = nil
                         }
@@ -279,7 +312,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                     else {
                         self.view.isUserInteractionEnabled = true
                         self.loadLabel.isHidden = true
-                        self.displayAlertMessage(message: "invalid data format")
+                        self.displayAlertMessage(title: "Authencation Failed", message: "invalid response format")
                         self._username?.text = nil
                         self._password?.text = nil
                     }
@@ -288,7 +321,7 @@ class ViewController: UIViewController, NSURLConnectionDelegate {
                 else {
                     self.view.isUserInteractionEnabled = true
                     self.loadLabel.isHidden = true
-                    self.displayAlertMessage(message: "response data is empty")
+                    self.displayAlertMessage(title: "Authencation Failed", message: "No response from server")
                     self._username?.text = nil
                     self._password?.text = nil
                 }
@@ -312,6 +345,11 @@ extension String: ParameterEncoding {
     
 }
 
+extension CGFloat {
+    static func random() -> CGFloat {
+        return CGFloat(arc4random()) / CGFloat(UInt32.max)
+    }
+}
 
 
 

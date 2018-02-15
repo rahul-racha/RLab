@@ -6,5 +6,6 @@ target "TLab" do
 	pod 'Alamofire', '~>4.0'
 	pod 'SwiftKeychainWrapper', :git => 'https://github.com/jrendel/SwiftKeychainWrapper.git'
         pod 'BadgeSwift', '~> 5.0'
+        pod 'BEMCheckBox'
 end
 # =end

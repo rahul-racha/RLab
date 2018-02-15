@@ -1,18 +1,19 @@
 //
-//  AstTableViewCell.swift
+//  ConfigTableViewCell.swift
 //  TLab
 //
-//  Created by Rahul Racha on 1/28/18.
+//  Created by Rahul Racha on 2/13/18.
 //  Copyright © 2018 handson. All rights reserved.
 //
 
 import UIKit
 
-class AstTableViewCell: UITableViewCell {
+class ConfigTableViewCell: UITableViewCell {
     
-    @IBOutlet weak var midasLabel: UILabel!
-    @IBOutlet weak var roleLabel: UILabel!
-    @IBOutlet weak var emailLabel: UILabel!
+    @IBOutlet weak var nameLabelField: UILabel!
+    @IBOutlet weak var midasLabelField: UILabel!
+    @IBOutlet weak var btnCheckmark: UIImageView!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -21,6 +22,7 @@ class AstTableViewCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+        
         // Configure the view for the selected state
     }
 
