@@ -14,8 +14,20 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
     var configSet = Set<String>()
     var indexSet = Set<Int>()
     @IBOutlet weak var configTableView: UITableView!
+    @IBOutlet weak var btnDisable: UIButtonX!
+    @IBOutlet weak var btnAdmin: UIButtonX!
+    @IBOutlet weak var btnDelete: UIButtonX!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        let role = Manager.userData?["role"] as! String
+        if (role != "Professor" && role != "admin") {
+            self.handleAlertAction(title: "Authorization",message: "Unauthorized access", actionTitle: "Ok")
+            
+        }
+        self.btnDisable.titleLabel?.adjustsFontSizeToFitWidth = true
+        self.btnAdmin.titleLabel?.adjustsFontSizeToFitWidth = true
+        self.btnDelete.titleLabel?.adjustsFontSizeToFitWidth = true
         self.configTableView.tableFooterView = UIView(frame: CGRect.zero)
         // Do any additional setup after loading the view.
     }
@@ -23,6 +35,18 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func handleAlertAction(title: String, message: String, actionTitle: String) {
+        let alertMsg = UIAlertController(title:title, message: message,
+                                         preferredStyle:UIAlertControllerStyle.alert);
+        
+        let confirmAction = UIAlertAction(title: actionTitle, style: UIAlertActionStyle.default, handler:
+        { (action) -> Void in
+            self.dismiss(animated: true, completion: nil)
+        })
+        alertMsg.addAction(confirmAction)
+        present(alertMsg, animated:true, completion: nil)
     }
     
     func displayAlertMessage(title: String, message: String) {
@@ -35,7 +59,7 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
     }
     
     func handleAlertAction(title: String, message: String, actionTitle: String, callback: @escaping () -> Void) {
-        let alertMsg = UIAlertController(title:"Alert", message: message,
+        let alertMsg = UIAlertController(title:title, message: message,
                                          preferredStyle:UIAlertControllerStyle.alert);
         
         let confirmAction = UIAlertAction(title: actionTitle, style: UIAlertActionStyle.default, handler:
@@ -53,7 +77,8 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
         self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func saveConfig(_ sender: Any) {
+    
+    @IBAction func disableConfig(_ sender: Any) {
         if (self.configSet.isEmpty) {
             self.displayAlertMessage(title: "Empty", message: "Select users to disable")
             return
@@ -63,15 +88,35 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
         
     }
     
-    func disableUsers() {
+    @IBAction func adminConfig(_ sender: Any) {
+        if (self.configSet.isEmpty) {
+            self.displayAlertMessage(title: "Empty", message: "Select users to grant admin role")
+            return
+        }
         
-        let parameters: Parameters = ["midasIDS": Array(self.configSet), "action": "disable"]
+        self.handleAlertAction(title: "Disable", message: "Assistants will be granted admin level access. Do you want to proceed?", actionTitle: "Ok", callback: makeAdmins)
+        
+    }
+    
+    @IBAction func deleteConfig(_ sender: Any) {
+        if (self.configSet.isEmpty) {
+            self.displayAlertMessage(title: "Empty", message: "Select users to delete")
+            return
+        }
+        
+        self.handleAlertAction(title: "Disable", message: "Assistants will be removed permanently. This may cause log data loss. Do you want to proceed?", actionTitle: "Ok", callback: deleteUsers)
+        
+    }
+    
+    
+    func disableUsers() {
+        let parameters: Parameters = ["midasIDs": Array(self.configSet), "action": "disable"]
         Alamofire.request(Manager.configUserService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 
                 if let data = response.result.value {
                     if (data.range(of:"Exception") != nil) {
-                        
+                        self.displayAlertMessage(title: "Alert", message: data)
                     } else {
                         
                         for index in self.indexSet {
@@ -79,6 +124,46 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
                         }
                         self.configTableView.reloadData()
                         self.displayAlertMessage(title: "Success", message: "Selected assistants are disabled!")
+                    }
+                }
+        }
+    }
+    
+    func makeAdmins() {
+        let parameters: Parameters = ["midasIDs": Array(self.configSet), "action": "admin"]
+        Alamofire.request(Manager.configUserService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
+            .responseString { response in
+                
+                if let data = response.result.value {
+                    if (data.range(of:"Exception") != nil) {
+                        self.displayAlertMessage(title: "Alert", message: data)
+                    } else {
+                        
+                        for index in self.indexSet {
+                            Manager.studentDetails?.remove(at: index)
+                        }
+                        self.configTableView.reloadData()
+                        self.displayAlertMessage(title: "Success", message: "Selected assistants are admins now!")
+                    }
+                }
+        }
+    }
+    
+    func deleteUsers() {
+        let parameters: Parameters = ["midasIDs": Array(self.configSet), "action": "delete"]
+        Alamofire.request(Manager.configUserService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
+            .responseString { response in
+                
+                if let data = response.result.value {
+                    if (data.range(of:"Exception") != nil) {
+                        self.displayAlertMessage(title: "Alert", message: data)
+                    } else {
+                        
+                        for index in self.indexSet {
+                            Manager.studentDetails?.remove(at: index)
+                        }
+                        self.configTableView.reloadData()
+                        self.displayAlertMessage(title: "Success", message: "Selected assistants are deleted!")
                     }
                 }
         }

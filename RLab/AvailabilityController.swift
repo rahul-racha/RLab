@@ -89,9 +89,9 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             proxyUser = Int(Manager.userData?["userid"] as! String)!
         }
         
-        //if (self.role == "T.A" || self.role == "student") {
+        if (self.role == "T.A" || self.role == "student") {
             self.tableView.allowsSelection = false
-        //}
+        }
         //if (Manager.controlLoadAllCells == false) {
         let parameters: Parameters = ["userid": proxyUser ]
         Alamofire.request(Manager.chartDataService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])

@@ -135,8 +135,8 @@ class LoginViewController: UIViewController, NSURLConnectionDelegate {
         if (timerVal == nil) {
         timerVal = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.handleTimeOut), userInfo: nil, repeats: true)
         }
-        //self.verifyLogin(username: username!, password: password!)
-        self.rlabLogin(username: username!, password: password!)
+        self.verifyLogin(username: username!, password: password!)
+        //self.rlabLogin(username: username!, password: password!)
     }
     
     func handleTimeOut() {

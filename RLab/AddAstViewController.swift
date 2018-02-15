@@ -25,11 +25,16 @@ class AddAstViewController: UIViewController {
     fileprivate var mail_list = [String]()
     fileprivate var fname_list = [String]()
     fileprivate var lname_list = [String]()
-    fileprivate var role_list: [String] = ["Teaching Assistant", "Research Assistant"]
+    fileprivate var role_list: [String] = ["T.A", "R.A"]
     var isScroll: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let role = Manager.userData?["role"] as! String
+        if (role != "Professor" && role != "admin") {
+            self.handleAlertAction(title: "Authorization",message: "Unauthorized access", actionTitle: "Ok")
+            
+        }
         self.astTableView.tableFooterView = UIView(frame: CGRect.zero)
         self.initPicker()
         self.isScroll = true
@@ -40,6 +45,19 @@ class AddAstViewController: UIViewController {
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
     }
+    
+    func handleAlertAction(title: String, message: String, actionTitle: String) {
+        let alertMsg = UIAlertController(title:title, message: message,
+                                         preferredStyle:UIAlertControllerStyle.alert);
+        
+        let confirmAction = UIAlertAction(title: actionTitle, style: UIAlertActionStyle.default, handler:
+        { (action) -> Void in
+            self.dismiss(animated: true, completion: nil)
+        })
+        alertMsg.addAction(confirmAction)
+        present(alertMsg, animated:true, completion: nil)
+    }
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -254,12 +272,12 @@ extension AddAstViewController: UITableViewDelegate, UITableViewDataSource {
         cell.midasLabel.text = self.midas_list[indexPath.row]
         cell.emailLabel.text = self.mail_list[indexPath.row]
         
-        let roleText = self.roles_selected[indexPath.row]
-        if (roleText == "Teaching Assistant") {
-            cell.roleLabel.text = "T.A"
-        } else {
-            cell.roleLabel.text = "R.A"
-        }
+        cell.roleLabel.text = self.roles_selected[indexPath.row]
+//        if (roleText == "Teaching Assistant") {
+//            cell.roleLabel.text = "T.A"
+//        } else {
+//            cell.roleLabel.text = "R.A"
+//        }
         
         return cell
     }
@@ -288,7 +306,7 @@ extension AddAstViewController: UIPickerViewDataSource, UIPickerViewDelegate {
     }
     
     func tappedToolBarBtn(_ sender: UIBarButtonItem) {
-        self.astPickerField.text = "Teaching Assistant"
+        self.astPickerField.text = "T.A"
         self.astPickerField.resignFirstResponder()
     }
     
