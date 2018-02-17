@@ -12,6 +12,7 @@ struct Manager {
     
     static var userData: [String: Any]?
     static var beaconDetails: [[String: Any]]?
+    static var extras: [String: Any]?
     static var deviceId: String?
     static var controlData: Bool?  // Need to put this in CreateAgileViewController
     static var toggleAssistant: Bool = false

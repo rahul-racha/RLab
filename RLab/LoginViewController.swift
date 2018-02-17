@@ -140,12 +140,12 @@ class LoginViewController: UIViewController, NSURLConnectionDelegate {
     }
     
     func handleTimeOut() {
-        if (self.counter >= 8) {
+        if (self.counter >= 15) {
             self.timerVal?.invalidate()
             self.timerVal = nil
             self.viewDidLoad()
             self.view.isUserInteractionEnabled = true
-            self.displayAlertMessage(title: "Time Out", message: "Connection timed out. Check your internet connection and retry")
+            self.displayAlertMessage(title: "Time Out", message: "Connection timed out. Could not connect to the server. Check your internet connection and retry.")
             self.counter = 0
         }
         self.loadLabel.textColor = UIColor(red:   .random(),
@@ -246,6 +246,7 @@ class LoginViewController: UIViewController, NSURLConnectionDelegate {
                         if (dict["user_details"] != nil) {
                             Manager.userData = dict["user_details"] as! [String: Any]
                             Manager.beaconDetails = dict["beacon_details"] as! [[String: Any]]
+                            Manager.extras = dict["extras"] as! [String: Any]
                             print("beacon details: \(Manager.beaconDetails)")
                             
                             if let user = Manager.userData?["midas_id"] as? String {

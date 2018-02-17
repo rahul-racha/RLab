@@ -29,6 +29,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     var reloadController: Bool = false
     //var status: Bool?
     var role: String?
+    var access_level: String?
     var location: String = "out"
     var color: UIColor?
     var preLocation: String = "out"
@@ -40,7 +41,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = String(describing: Manager.userData?["first_name"] as! String)
+        self.navigationItem.title = String(describing: Manager.userData?["username"] as! String)
         let attrs = [
             NSForegroundColorAttributeName: UIColor.blue,
             NSFontAttributeName: UIFont(name: "Avenir-Black", size: 20)!
@@ -67,31 +68,30 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         if (Manager.userData == nil) {
             return
         }
+        self.toggleAssistant.isHidden = true
         var proxyUser = 0
         print(Manager.userData)
         self.deviceUserId = Int(Manager.userData?["userid"] as! String)
         self.role = Manager.userData?["role"] as! String
+        self.access_level = Manager.userData?["access_level"] as! String
         
-        if (self.role == "Professor") {
+        if (self.role == "Professor" && self.access_level == "super") {
             self.toggleAssistant.isHidden = false
             if (self.toggleAssistant.isOn == true) {
-                proxyUser = 6
-                //self.role = "R.A"
+                proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
                 Manager.toggleAssistant = true
             }else {
-                proxyUser = 3
-                //self.role = "T.A"
+                proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
                 Manager.toggleAssistant = false
             }
-        }
-        else {
-            self.toggleAssistant.isHidden = true
+        } else if (self.role == "Professor" && self.access_level == "super_ra") {
+            proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
+        } else if (self.role == "Professor" && self.access_level == "super_ta") {
+            proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
+        } else {
             proxyUser = Int(Manager.userData?["userid"] as! String)!
         }
-        
-        if (self.role == "T.A" || self.role == "student") {
-            self.tableView.allowsSelection = false
-        }
+
         //if (Manager.controlLoadAllCells == false) {
         let parameters: Parameters = ["userid": proxyUser ]
         Alamofire.request(Manager.chartDataService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
@@ -580,7 +580,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         
         xaxis.valueFormatter = formato
         
-        cell.weekHours.text = String(round((weekHours-values[values.count-1])*100)/100)
+        cell.weekHours.text = String(round((weekHours-values[0])*100)/100)
         
         //xaxis.drawGridLinesEnabled = false
         
@@ -601,24 +601,24 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         chartData.addDataSet(chartDataSet)
         chartData.barWidth = 0.2
         cell.availabilityChartView.data = chartData
-        
+        cell.availabilityChartView.chartDescription = nil
         //cell.availabilityChartView.drawValueAboveBarEnabled = true
         //cell.availabilityChartView.xAxis.wordWrapEnabled = false
         cell.availabilityChartView.animate(xAxisDuration: 0.5, yAxisDuration: 0.5, easingOption: .easeInBounce)
         //chartDataSet.colors = [UIColor(red: 230/255, green: 126/255, blue: 34/255, alpha: 1)]
         cell.availabilityChartView.notifyDataSetChanged() // MARK : notifyDataSetCanged() prevents Index out of Range error while assigning chartData to cell data
         
+        
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! TableViewCell
-        if (self.role == "T.A" || self.role == "student") {
-            cell.weekHours.isHidden = true
-        }
+
         // Configure the cell...
         if Manager.studentDetails != nil {
-            cell.name.text = Manager.studentDetails?[indexPath.row]["username"] as? String
+            cell.name.text = (Manager.studentDetails?[indexPath.row]["username"] as? String)!
+            print("********** \(cell.name.text)")
             cell.projects.text = Manager.studentDetails?[indexPath.row]["projects"] as? String
             cell.profileImage.image = #imageLiteral(resourceName: "default")
             if (Manager.studentDetails?[indexPath.row]["image"] != nil) {
@@ -660,24 +660,29 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 cell.studentActivityStatus(status: StatusColor.unknown)
                 cell.weekHours.textColor = UIColor.white
             }
-            if (self.role == "T.A" || self.role == "student") {
-                cell.availabilityChartView.isHidden = true
-            } else {
-                cell.availabilityChartView.isHidden = false
-            }
-            cell.availabilityChartView.noDataText = "Availability Info Not Found"
             let xData: [String] = (Manager.studentDetails?[indexPath.row]["xLabels"] as? [String])!
             print(xData)
             let yData: [Double] = (Manager.studentDetails?[indexPath.row]["value"] as? [Double])!
             self.setChart(cell: cell, dataPoints: xData, values: yData, indexPath: indexPath)
+            
+            if (Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!) != self.deviceUserId!) {
+                //cell.isUserInteractionEnabled = false
+                cell.weekHours.isHidden = true
+                cell.availabilityChartView.isHidden = true
+            } else {
+                cell.weekHours.isHidden = false
+                cell.availabilityChartView.isHidden = false
+            }
+            
+            
         } else {
             cell.name.text = "student" + String(indexPath.row)
             cell.profileImage.image = #imageLiteral(resourceName: "default")
-            
             cell.backgroundColor = UIColor.clear
             cell.studentActivityStatus(status: StatusColor.unknown)
             cell.weekHours.textColor = UIColor.white
             cell.availabilityChartView.noDataText = "Availability Info Not Found"
+            cell.isUserInteractionEnabled = false
             
         }
         
@@ -686,6 +691,9 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! TableViewCell
+        if (Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!) != self.deviceUserId!) {
+            return
+        }
         cell.backgroundColor = UIColor.clear
         self.color = UIColor.gray
         if Manager.studentDetails?[indexPath.row]["status"] as? String == "Yes" {

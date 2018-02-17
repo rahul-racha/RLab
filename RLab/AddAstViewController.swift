@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 
-class AddAstViewController: UIViewController {
+class AddAstViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var astTableView: UITableView!
     @IBOutlet weak var astTextField: UITextField!
@@ -17,33 +17,48 @@ class AddAstViewController: UIViewController {
     @IBOutlet weak var astEmailField: UITextField!
     @IBOutlet weak var astFirstName: UITextField!
     @IBOutlet weak var astLastName: UITextField!
-    @IBOutlet weak var tableTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var btnBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var astUserName: UITextField!
+    //@IBOutlet weak var tableTopConstraint: NSLayoutConstraint!
+    //@IBOutlet weak var btnBottomConstraint: NSLayoutConstraint!
     
     fileprivate var midas_list: [String] = []
+    fileprivate var username_list: [String] = []
     fileprivate var roles_selected = [String]()
     fileprivate var mail_list = [String]()
     fileprivate var fname_list = [String]()
     fileprivate var lname_list = [String]()
-    fileprivate var role_list: [String] = ["T.A", "R.A"]
+    fileprivate var role_list: [String] = ["T.A", "R.A", "Professor", "student"]
     var isScroll: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let role = Manager.userData?["role"] as! String
-        if (role != "Professor" && role != "admin") {
+        let access_level = Manager.userData?["access_level"] as! String
+        if (access_level != "super" && access_level != "super_ta" && access_level != "super_ra") {
             self.handleAlertAction(title: "Authorization",message: "Unauthorized access", actionTitle: "Ok")
             
         }
         self.astTableView.tableFooterView = UIView(frame: CGRect.zero)
         self.initPicker()
         self.isScroll = true
-        NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
+        
+        self.astUserName.delegate = self
+        self.astLastName.delegate = self
+        self.astFirstName.delegate = self
+        self.astEmailField.delegate = self
+        self.astPickerField.delegate = self
+        self.astTextField.delegate = self
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        //self.view.endEditing(true)
+        textField.resignFirstResponder()
+        return true;
     }
     
     func handleAlertAction(title: String, message: String, actionTitle: String) {
@@ -64,32 +79,32 @@ class AddAstViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func keyboardWillShow(notification: NSNotification) {
-        if (self.isScroll == true) {
-            adjustHeight(show: true, notification: notification)
-            self.isScroll = false
-        }
-    }
-    
-    func keyboardWillHide(notification: NSNotification) {
-        if (self.isScroll == false) {
-            adjustHeight(show: false, notification: notification)
-            self.isScroll = true
-        }
-    }
-    
-    func adjustHeight(show:Bool, notification:NSNotification) {
-        var userInfo = notification.userInfo!
-        let keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
-        let animationDurarion = userInfo[UIKeyboardAnimationDurationUserInfoKey] as! TimeInterval
-        let changeInHeight = (keyboardFrame.height) * (show ? 1 : -1)
-        UIView.animate(withDuration: animationDurarion, animations: { () -> Void in
-            self.btnBottomConstraint.constant += changeInHeight
-            //if self.viewBox.frame.origin.y == 0{
-            //self.viewBox.frame.origin.y += changeInHeight
-            //}
-        })
-    }
+//    func keyboardWillShow(notification: NSNotification) {
+//        if (self.isScroll == true) {
+//            adjustHeight(show: true, notification: notification)
+//            self.isScroll = false
+//        }
+//    }
+//    
+//    func keyboardWillHide(notification: NSNotification) {
+//        if (self.isScroll == false) {
+//            adjustHeight(show: false, notification: notification)
+//            self.isScroll = true
+//        }
+//    }
+//    
+//    func adjustHeight(show:Bool, notification:NSNotification) {
+//        var userInfo = notification.userInfo!
+//        let keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+//        let animationDurarion = userInfo[UIKeyboardAnimationDurationUserInfoKey] as! TimeInterval
+//        let changeInHeight = (keyboardFrame.height) * (show ? 1 : -1)
+//        UIView.animate(withDuration: animationDurarion, animations: { () -> Void in
+//            self.btnBottomConstraint.constant += 100
+//            //if self.viewBox.frame.origin.y == 0{
+//            //self.viewBox.frame.origin.y += changeInHeight
+//            //}
+//        })
+//    }
     
     @IBAction func dismissAddAstViewCntrl(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
@@ -109,8 +124,15 @@ class AddAstViewController: UIViewController {
         return nameTest.evaluate(with: testStr)
     }
     
+    func isValidUsername(testStr:String) -> Bool {
+        let nameRegEx = "^[a-zA-Z]+$"
+        
+        let nameTest = NSPredicate(format:"SELF MATCHES %@", nameRegEx)
+        return nameTest.evaluate(with: testStr)
+    }
+    
     func isValidMidas(testStr:String) -> Bool {
-        let midasRegEx = "^[a-zA-Z]+([0-9]+)*$"
+        let midasRegEx = "^[a-z]+([0-9]+)*$"
         
         let midasTest = NSPredicate(format:"SELF MATCHES %@", midasRegEx)
         return midasTest.evaluate(with: testStr)
@@ -127,7 +149,7 @@ class AddAstViewController: UIViewController {
 
     
     @IBAction func addAssistant(_ sender: Any) {
-        if ((self.astTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astPickerField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astEmailField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astFirstName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astLastName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!
+        if ((self.astTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astPickerField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astEmailField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astFirstName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astLastName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astUserName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!
             ){
             self.displayAlertMessage(message: "All fields are required")
             return
@@ -153,6 +175,11 @@ class AddAstViewController: UIViewController {
             return
         }
         
+        if (!self.isValidUsername(testStr: self.astUserName.text!)) {
+            self.displayAlertMessage(message: "user name should contain only letters with no spaces. Eg: James")
+            return
+        }
+        
         if (self.midas_list.contains(self.astTextField.text!)) {
             self.displayAlertMessage(message: "User already added")
             return
@@ -160,6 +187,11 @@ class AddAstViewController: UIViewController {
         
         if (self.mail_list.contains(self.astEmailField.text!)) {
             self.displayAlertMessage(message: "Email already added")
+            return
+        }
+        
+        if (self.username_list.contains(self.astUserName.text!)) {
+            self.displayAlertMessage(message: "Username already added")
             return
         }
         insertAssistantID()
@@ -171,6 +203,7 @@ class AddAstViewController: UIViewController {
         self.mail_list.append(self.astEmailField.text!)
         self.fname_list.append(self.astFirstName.text!)
         self.lname_list.append(self.astLastName.text!)
+        self.username_list.append(self.astUserName.text!)
         let indexPath = IndexPath(row: self.midas_list.count-1, section: 0)
         self.astTableView.beginUpdates()
         self.astTableView.insertRows(at: [indexPath], with: .automatic)
@@ -180,6 +213,7 @@ class AddAstViewController: UIViewController {
         self.astEmailField.text = ""
         self.astFirstName.text = ""
         self.astLastName.text = ""
+        self.astUserName.text = ""
         view.endEditing(true)
     }
 
@@ -188,7 +222,7 @@ class AddAstViewController: UIViewController {
             self.displayAlertMessage(message:"Please add a user")
             return
         }
-        let parameters: Parameters = ["midasIDS": self.midas_list, "roleList": self.roles_selected, "mailList": self.mail_list, "fnameList": self.fname_list, "lnameList": self.lname_list]
+        let parameters: Parameters = ["midasIDS": self.midas_list, "roleList": self.roles_selected, "mailList": self.mail_list, "fnameList": self.fname_list, "lnameList": self.lname_list, "usernameList": self.username_list]
         Alamofire.request(Manager.addAsstService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 
@@ -201,13 +235,14 @@ class AddAstViewController: UIViewController {
                             self.midas_list.removeAll()
                             self.roles_selected.removeAll()
                             self.mail_list.removeAll()
-                            
+                            self.username_list.removeAll()
                             for _ in 0..<self.midas_list.count {
                                 self.astTableView.beginUpdates()
                                 let indexPath = IndexPath(row: 0, section: 0)
                                 self.astTableView.deleteRows(at: [indexPath], with: .automatic)
                                 self.astTableView.endUpdates()
                             }
+                            
                             self.astTableView.reloadData()
                         }
                     }
@@ -293,6 +328,7 @@ extension AddAstViewController: UITableViewDelegate, UITableViewDataSource {
             self.mail_list.remove(at: indexPath.row)
             self.fname_list.remove(at: indexPath.row)
             self.lname_list.remove(at: indexPath.row)
+            self.username_list.remove(at: indexPath.row)
             self.astTableView.beginUpdates()
             self.astTableView.deleteRows(at: [indexPath], with: .automatic)
             self.astTableView.endUpdates()

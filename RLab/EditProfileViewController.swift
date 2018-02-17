@@ -14,6 +14,7 @@ class EditProfileViewController: UIViewController {
     @IBOutlet weak var fnameTextField: UITextField!
     @IBOutlet weak var lnameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
+    @IBOutlet weak var usernameTxtField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,6 +67,7 @@ class EditProfileViewController: UIViewController {
         self.fnameTextField.placeholder = String(describing: Manager.userData?["first_name"] as! String)
         self.lnameTextField.placeholder = String(describing: Manager.userData?["last_name"] as! String)
         self.emailTextField.placeholder = String(describing: Manager.userData?["email"] as! String)
+        self.usernameTxtField.placeholder = String(describing: Manager.userData?["username"] as! String)
     }
     
     func isValidEmail(testStr:String) -> Bool {
@@ -77,6 +79,13 @@ class EditProfileViewController: UIViewController {
     
     func isValidName(testStr:String) -> Bool {
         let nameRegEx = "^[a-zA-Z]+([ '-][a-zA-Z]+)*$"
+        
+        let nameTest = NSPredicate(format:"SELF MATCHES %@", nameRegEx)
+        return nameTest.evaluate(with: testStr)
+    }
+    
+    func isValidUsername(testStr:String) -> Bool {
+        let nameRegEx = "^[a-zA-Z]+$"
         
         let nameTest = NSPredicate(format:"SELF MATCHES %@", nameRegEx)
         return nameTest.evaluate(with: testStr)
@@ -97,7 +106,8 @@ class EditProfileViewController: UIViewController {
     
     @IBAction func updateFields(_ sender: Any) {
         
-        if ((self.fnameTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! && (self.lnameTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! && (self.emailTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!) {
+        if ((self.fnameTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! && (self.lnameTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! && (self.emailTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! && (self.usernameTxtField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!
+            ) {
             self.displayAlertMessage(message: "None of the entries are filled")
             return
         }
@@ -117,11 +127,17 @@ class EditProfileViewController: UIViewController {
             return
         }
         
+        if (!(self.usernameTxtField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! && !self.isValidUsername(testStr: self.usernameTxtField.text!)) {
+            self.displayAlertMessage(message: "User name should contain only letters with no spaces. Eg: James")
+            return
+        }
+        
         let fText = (!(self.fnameTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!) ? self.fnameTextField.text! : self.fnameTextField.placeholder!
         let lText = (!(self.lnameTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!) ? self.lnameTextField.text! : self.lnameTextField.placeholder!
         let eText = (!(self.emailTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!) ? self.emailTextField.text! : self.emailTextField.placeholder!
+        let unameTxt = (!(self.usernameTxtField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!) ? self.usernameTxtField.text! : self.usernameTxtField.placeholder!
         
-        let parameters: Parameters = ["fname": fText, "lname": lText, "email": eText, "midasID": String(describing: Manager.userData?["midas_id"] as! String)]
+        let parameters: Parameters = ["fname": fText, "lname": lText, "email": eText, "username": unameTxt, "midasID": String(describing: Manager.userData?["midas_id"] as! String)]
         Alamofire.request(Manager.updateProfileService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 if let data = response.result.value {
@@ -133,14 +149,17 @@ class EditProfileViewController: UIViewController {
                         self.fnameTextField.placeholder = fText
                         self.lnameTextField.placeholder = lText
                         self.emailTextField.placeholder = eText
+                        self.usernameTxtField.placeholder = unameTxt
                         
                         self.fnameTextField.text = ""
                         self.lnameTextField.text = ""
                         self.emailTextField.text = ""
+                        self.usernameTxtField.text = ""
                         
                         Manager.userData?["first_name"] = fText
                         Manager.userData?["last_name"] = lText
                         Manager.userData?["email"] = eText
+                        Manager.userData?["username"] = unameTxt
                         
                     }
                 }

@@ -12,7 +12,6 @@ import Alamofire
 class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var configSet = Set<String>()
-    var indexSet = Set<Int>()
     @IBOutlet weak var configTableView: UITableView!
     @IBOutlet weak var btnDisable: UIButtonX!
     @IBOutlet weak var btnAdmin: UIButtonX!
@@ -20,8 +19,8 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let role = Manager.userData?["role"] as! String
-        if (role != "Professor" && role != "admin") {
+        let access_level = Manager.userData?["access_level"] as! String
+        if (access_level != "super" && access_level != "super_ta" && access_level != "super_ra") {
             self.handleAlertAction(title: "Authorization",message: "Unauthorized access", actionTitle: "Ok")
             
         }
@@ -119,8 +118,10 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
                         self.displayAlertMessage(title: "Alert", message: data)
                     } else {
                         
-                        for index in self.indexSet {
-                            Manager.studentDetails?.remove(at: index)
+                        for i in 0..<Manager.studentDetails!.count {
+                            if (self.configSet.contains((Manager.studentDetails?[i]["midas_id"] as? String)!)) {
+                                Manager.studentDetails?.remove(at: i)
+                            }
                         }
                         self.configTableView.reloadData()
                         self.displayAlertMessage(title: "Success", message: "Selected assistants are disabled!")
@@ -139,10 +140,10 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
                         self.displayAlertMessage(title: "Alert", message: data)
                     } else {
                         
-                        for index in self.indexSet {
-                            Manager.studentDetails?.remove(at: index)
-                        }
-                        self.configTableView.reloadData()
+//                        for index in self.indexSet {
+//                            Manager.studentDetails?.remove(at: index)
+//                        }
+//                        self.configTableView.reloadData()
                         self.displayAlertMessage(title: "Success", message: "Selected assistants are admins now!")
                     }
                 }
@@ -159,8 +160,10 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
                         self.displayAlertMessage(title: "Alert", message: data)
                     } else {
                         
-                        for index in self.indexSet {
-                            Manager.studentDetails?.remove(at: index)
+                        for i in 0..<Manager.studentDetails!.count {
+                            if (self.configSet.contains((Manager.studentDetails?[i]["midas_id"] as? String)!)) {
+                                Manager.studentDetails?.remove(at: i)
+                            }
                         }
                         self.configTableView.reloadData()
                         self.displayAlertMessage(title: "Success", message: "Selected assistants are deleted!")
@@ -180,7 +183,7 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "configCell", for: indexPath) as! ConfigTableViewCell
         cell.midasLabelField.text = Manager.studentDetails?[indexPath.row]["midas_id"] as? String
-        cell.nameLabelField.text = Manager.studentDetails?[indexPath.row]["first_name"] as? String
+        cell.nameLabelField.text = Manager.studentDetails?[indexPath.row]["username"] as? String
         return cell
         
     }
@@ -189,14 +192,12 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
         let currentCell = tableView.cellForRow(at: indexPath) as! ConfigTableViewCell
         currentCell.btnCheckmark.image =  #imageLiteral(resourceName: "icons8-checked-checkbox-filled-100")
         self.configSet.insert(Manager.studentDetails![indexPath.row]["midas_id"] as! String)
-        self.indexSet.insert(indexPath.row)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let currentCell = tableView.cellForRow(at: indexPath) as! ConfigTableViewCell
         currentCell.btnCheckmark.image =  #imageLiteral(resourceName: "icons8-unchecked-checkbox-100")
         self.configSet.remove(Manager.studentDetails![indexPath.row]["midas_id"] as! String)
-        self.indexSet.remove(indexPath.row)
     }
 
 }

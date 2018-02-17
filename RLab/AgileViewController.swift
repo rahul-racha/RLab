@@ -33,23 +33,46 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
         self.menuBtnItem.action = #selector(SWRevealViewController.revealToggle(_:))
         
         Manager.controlData = false
-        var userId: Int?
-        if(Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
+        
+//        var userId: Int?
+//        if(Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
+//            self.toggleAssistant.isHidden = false
+//            if(self.toggleAssistant.isOn == true) {
+//                userId = 6
+//                Manager.toggleAssistant = true
+//            }else {
+//                userId = 14
+//                Manager.toggleAssistant = false
+//            }
+//        }
+//        else {
+//            self.toggleAssistant.isHidden = true
+//            userId = Int(Manager.userData?["userid"] as! String)
+//        }
+        self.toggleAssistant.isHidden = true
+        var proxyUser = 0
+        let role = Manager.userData?["role"] as! String
+        let access_level = Manager.userData?["access_level"] as! String
+        
+        if (role == "Professor" && access_level == "super") {
             self.toggleAssistant.isHidden = false
-            if(self.toggleAssistant.isOn == true) {
-                userId = 6
+            if (self.toggleAssistant.isOn == true) {
+                proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
                 Manager.toggleAssistant = true
             }else {
-                userId = 14
+                proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
                 Manager.toggleAssistant = false
             }
+        } else if (role == "Professor" && access_level == "super_ra") {
+            proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
+        } else if (role == "Professor" && access_level == "super_ta") {
+            proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
+        } else {
+            proxyUser = Int(Manager.userData?["userid"] as! String)!
         }
-        else {
-            self.toggleAssistant.isHidden = true
-            userId = Int(Manager.userData?["userid"] as! String)
-        }
+
         
-        let parameters: Parameters = ["userid":userId!]
+        let parameters: Parameters = ["userid":proxyUser]
         Alamofire.request(Manager.agileBoardService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseJSON { response in
             
             if let data = response.data {
