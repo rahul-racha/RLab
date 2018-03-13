@@ -33,6 +33,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     var location: String = "out"
     var color: UIColor?
     var preLocation: String = "out"
+    var timer: Timer?
     
     @IBOutlet weak var toggleAssistant: UISwitch!
     @IBOutlet var tableView: UITableView!
@@ -113,7 +114,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         }
         //}
        
-            Timer.scheduledTimer(timeInterval: 300, target: self, selector: #selector(self.reloadAvailView), userInfo: nil, repeats: true)
+            self.timer = Timer.scheduledTimer(timeInterval: 300, target: self, selector: #selector(self.reloadAvailView), userInfo: nil, repeats: true)
 
         
     }
@@ -171,7 +172,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     func updateAllStatus(_ notification: Notification) {
         //Manager.controlLoadAllCells = false
         print("in reload view fn")
-        if (Manager.isAppActive == true) {
+        if (Manager.isAppActive == true && Manager.triggerNotifications == true) {
             viewDidLoad()
         }
     }
@@ -182,6 +183,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             self.locationManager.stopMonitoring(for: self.beaconRegion!)
             self.locationManager.stopRangingBeacons(in: self.beaconRegion!)
             self.locationManager.stopUpdatingLocation()
+            self.timer?.invalidate()
+            self.timer = nil
         }
         self.handleOutsideRegion()
         
@@ -212,7 +215,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     }
     
     func catchStatusNotification(notification: Notification) {
-        if (Manager.isAppActive == true) {
+        if (Manager.isAppActive == true && Manager.triggerNotifications == true) {
             let student = notification.userInfo as! [String : Any]
             if (Manager.studentDetails != nil) {
                 for i in 0..<Manager.studentDetails!.count {
@@ -665,7 +668,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
             let yData: [Double] = (Manager.studentDetails?[indexPath.row]["value"] as? [Double])!
             self.setChart(cell: cell, dataPoints: xData, values: yData, indexPath: indexPath)
             
-            if (Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!) != self.deviceUserId!) {
+            if (self.role != "Professor" && Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!) != self.deviceUserId!) {
                 //cell.isUserInteractionEnabled = false
                 cell.weekHours.isHidden = true
                 cell.availabilityChartView.isHidden = true
@@ -691,7 +694,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! TableViewCell
-        if (Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!) != self.deviceUserId!) {
+        if (self.role != "Professor" && Int((Manager.studentDetails?[indexPath.row]["userid"] as? String)!) != self.deviceUserId!) {
             return
         }
         cell.backgroundColor = UIColor.clear

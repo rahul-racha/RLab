@@ -246,6 +246,7 @@ class LoginViewController: UIViewController, NSURLConnectionDelegate {
                         if (dict["user_details"] != nil) {
                             Manager.userData = dict["user_details"] as! [String: Any]
                             Manager.beaconDetails = dict["beacon_details"] as! [[String: Any]]
+                            Manager.sectionDetails = dict["section_details"] as! [String: String]
                             Manager.extras = dict["extras"] as! [String: Any]
                             print("beacon details: \(Manager.beaconDetails)")
                             

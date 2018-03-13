@@ -18,6 +18,10 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var astFirstName: UITextField!
     @IBOutlet weak var astLastName: UITextField!
     @IBOutlet weak var astUserName: UITextField!
+    @IBOutlet weak var astUinField: UITextField!
+    @IBOutlet weak var astSectionField: UITextField!
+    @IBOutlet weak var scrollView: UIScrollView!
+    
     //@IBOutlet weak var tableTopConstraint: NSLayoutConstraint!
     //@IBOutlet weak var btnBottomConstraint: NSLayoutConstraint!
     
@@ -27,7 +31,10 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
     fileprivate var mail_list = [String]()
     fileprivate var fname_list = [String]()
     fileprivate var lname_list = [String]()
+    fileprivate var uin_list = [String]()
     fileprivate var role_list: [String] = ["T.A", "R.A", "Professor", "student"]
+    fileprivate var section_list = [String]()
+    fileprivate var section_selected = [String]()
     var isScroll: Bool?
     
     override func viewDidLoad() {
@@ -38,7 +45,10 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
             
         }
         self.astTableView.tableFooterView = UIView(frame: CGRect.zero)
+        //self.mapSections()
+        self.section_list = Array(Manager.sectionDetails!.keys)
         self.initPicker()
+        self.initSectionPicker()
         self.isScroll = true
         //NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         //NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -47,18 +57,35 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         tap.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tap)
         
+        
         self.astUserName.delegate = self
         self.astLastName.delegate = self
         self.astFirstName.delegate = self
         self.astEmailField.delegate = self
         self.astPickerField.delegate = self
         self.astTextField.delegate = self
+        self.astUinField.delegate = self
+        self.astSectionField.delegate = self
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         //self.view.endEditing(true)
         textField.resignFirstResponder()
         return true;
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if (textField == self.astLastName || textField == self.astUserName
+            || textField == self.astSectionField) {
+            let point = CGPoint(x:0, y:125)
+            self.scrollView.setContentOffset(point, animated: true)
+        }
+    }
+    
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        let point = CGPoint(x:0, y:0)
+        self.scrollView.setContentOffset(point, animated: true)
+        return true
     }
     
     func handleAlertAction(title: String, message: String, actionTitle: String) {
@@ -110,6 +137,13 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         self.dismiss(animated: true, completion: nil)
     }
     
+//    func mapSections() {
+//        for section in Manager.sectionDetails! {
+//            self.section_list = [section.keys as! String]
+//        }
+//    }
+    
+    
     func isValidEmail(testStr:String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         
@@ -131,9 +165,14 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         return nameTest.evaluate(with: testStr)
     }
     
+    func isValidUIN(testStr:String) -> Bool {
+        let UINRegEx = "^[0-9]{8,}$"
+        let UINTest = NSPredicate(format:"SELF MATCHES %@", UINRegEx)
+        return UINTest.evaluate(with: testStr)
+    }
+    
     func isValidMidas(testStr:String) -> Bool {
         let midasRegEx = "^[a-z]+([0-9]+)*$"
-        
         let midasTest = NSPredicate(format:"SELF MATCHES %@", midasRegEx)
         return midasTest.evaluate(with: testStr)
     }
@@ -149,7 +188,15 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
 
     
     @IBAction func addAssistant(_ sender: Any) {
-        if ((self.astTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astPickerField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astEmailField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astFirstName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astLastName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! || (self.astUserName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!
+        if ((self.astTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||
+            (self.astPickerField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||
+            (self.astEmailField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||
+            (self.astFirstName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||
+            (self.astLastName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||
+            (self.astUserName.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||
+            (self.astUinField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||
+            (self.astSectionField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)!
+            
             ){
             self.displayAlertMessage(message: "All fields are required")
             return
@@ -157,6 +204,11 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         
         if (!self.isValidMidas(testStr: self.astTextField.text!)) {
             self.displayAlertMessage(message: "Not a valid midas ID.")
+            return
+        }
+        
+        if (!self.isValidUIN(testStr: self.astUinField.text!)) {
+            self.displayAlertMessage(message: "Not a valid UIN.")
             return
         }
         
@@ -200,6 +252,8 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
     func insertAssistantID() {
         self.midas_list.append(self.astTextField.text!)
         self.roles_selected.append(self.astPickerField.text!)
+        self.section_selected.append(Manager.sectionDetails![self.astSectionField.text!]!)
+        self.uin_list.append(self.astUinField.text!)
         self.mail_list.append(self.astEmailField.text!)
         self.fname_list.append(self.astFirstName.text!)
         self.lname_list.append(self.astLastName.text!)
@@ -214,6 +268,8 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         self.astFirstName.text = ""
         self.astLastName.text = ""
         self.astUserName.text = ""
+        self.astUinField.text = ""
+        self.astSectionField.text = ""
         view.endEditing(true)
     }
 
@@ -222,7 +278,8 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
             self.displayAlertMessage(message:"Please add a user")
             return
         }
-        let parameters: Parameters = ["midasIDS": self.midas_list, "roleList": self.roles_selected, "mailList": self.mail_list, "fnameList": self.fname_list, "lnameList": self.lname_list, "usernameList": self.username_list]
+        
+        let parameters: Parameters = ["midasIDS": self.midas_list, "roleList": self.roles_selected, "mailList": self.mail_list, "fnameList": self.fname_list, "lnameList": self.lname_list, "usernameList": self.username_list, "uinList": self.uin_list, "sectionList":self.section_selected]
         Alamofire.request(Manager.addAsstService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
             .responseString { response in
                 
@@ -236,6 +293,10 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
                             self.roles_selected.removeAll()
                             self.mail_list.removeAll()
                             self.username_list.removeAll()
+                            self.fname_list.removeAll()
+                            self.lname_list.removeAll()
+                            self.uin_list.removeAll()
+                            self.section_selected.removeAll()
                             for _ in 0..<self.midas_list.count {
                                 self.astTableView.beginUpdates()
                                 let indexPath = IndexPath(row: 0, section: 0)
@@ -256,7 +317,7 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         let pickerView = UIPickerView()
         
         pickerView.delegate = self
-        
+        pickerView.tag = 1
         self.astPickerField.inputView = pickerView
         
         let toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.size.height/6, width: self.view.frame.size.width, height: 40.0))
@@ -294,6 +355,50 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         
         self.astPickerField.inputAccessoryView = toolBar
     }
+    
+    func initSectionPicker() {
+        let pickerView = UIPickerView()
+        
+        pickerView.delegate = self
+        pickerView.tag = 2
+        self.astSectionField.inputView = pickerView
+        
+        let toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.size.height/6, width: self.view.frame.size.width, height: 40.0))
+        
+        toolBar.layer.position = CGPoint(x: self.view.frame.size.width/2, y: self.view.frame.size.height-20.0)
+        
+        toolBar.barStyle = UIBarStyle.blackTranslucent
+        
+        toolBar.tintColor = UIColor.white
+        
+        toolBar.backgroundColor = UIColor.black
+        
+        
+        let defaultButton = UIBarButtonItem(title: "Default", style: UIBarButtonItemStyle.plain, target: self, action: #selector(AddAstViewController.secTappedToolBarBtn))
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.done, target: self, action: #selector(AddAstViewController.donePressed))
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: self, action: nil)
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width / 3, height: self.view.frame.size.height))
+        
+        label.font = UIFont(name: "Helvetica", size: 12)
+        
+        label.backgroundColor = UIColor.clear
+        
+        label.textColor = UIColor.white
+        
+        label.text = "select section"
+        
+        label.textAlignment = NSTextAlignment.center
+        
+        let textBtn = UIBarButtonItem(customView: label)
+        
+        toolBar.setItems([defaultButton,flexSpace,textBtn,flexSpace,doneButton], animated: true)
+        
+        self.astSectionField.inputAccessoryView = toolBar
+        
+    }
 
 }
 
@@ -306,14 +411,7 @@ extension AddAstViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = self.astTableView.dequeueReusableCell(withIdentifier: "astCell") as! AstTableViewCell
         cell.midasLabel.text = self.midas_list[indexPath.row]
         cell.emailLabel.text = self.mail_list[indexPath.row]
-        
         cell.roleLabel.text = self.roles_selected[indexPath.row]
-//        if (roleText == "Teaching Assistant") {
-//            cell.roleLabel.text = "T.A"
-//        } else {
-//            cell.roleLabel.text = "R.A"
-//        }
-        
         return cell
     }
     
@@ -329,6 +427,9 @@ extension AddAstViewController: UITableViewDelegate, UITableViewDataSource {
             self.fname_list.remove(at: indexPath.row)
             self.lname_list.remove(at: indexPath.row)
             self.username_list.remove(at: indexPath.row)
+            self.uin_list.remove(at: indexPath.row)
+            self.section_selected.remove(at: indexPath.row)
+            
             self.astTableView.beginUpdates()
             self.astTableView.deleteRows(at: [indexPath], with: .automatic)
             self.astTableView.endUpdates()
@@ -339,11 +440,17 @@ extension AddAstViewController: UITableViewDelegate, UITableViewDataSource {
 extension AddAstViewController: UIPickerViewDataSource, UIPickerViewDelegate {
     func donePressed(_ sender: UIBarButtonItem) {
         self.astPickerField.resignFirstResponder()
+        self.astSectionField.resignFirstResponder()
     }
     
     func tappedToolBarBtn(_ sender: UIBarButtonItem) {
         self.astPickerField.text = "T.A"
         self.astPickerField.resignFirstResponder()
+    }
+    
+    func secTappedToolBarBtn(_ sender: UIBarButtonItem) {
+        self.astSectionField.text = "None"
+        self.astSectionField.resignFirstResponder()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -355,15 +462,29 @@ extension AddAstViewController: UIPickerViewDataSource, UIPickerViewDelegate {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return self.role_list.count
+        if (pickerView.tag == 1) {
+            return self.role_list.count
+        } else {
+            return self.section_list.count
+        }
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return self.role_list[row]
+        if (pickerView.tag == 1) {
+            return self.role_list[row]
+        } else {
+            return self.section_list[row]
+        }
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.astPickerField.text = self.role_list[row]
+        if (pickerView.tag == 1) {
+            self.astPickerField.text = self.role_list[row]
+        } else {
+            self.astSectionField.text = self.section_list[row]
+        }
     }
 
 }
+
+
