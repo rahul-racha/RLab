@@ -108,7 +108,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                         
                     }
                     catch {
-                        self.displayAlertMessage(message: "error serializing JSON: \(error)")
+                        //self.displayAlertMessage(message: "error serializing JSON: \(error)")
+                        print(error)
                     }
                 }
         }
@@ -273,6 +274,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         var min: NSNumber = -1
         var maj: NSNumber = -1
         var loc: String = "empty"
+        var tem: Bool = false
         print(self.beaconMap)
         if beacons.count > 0 {
             print(region.proximityUUID)
@@ -301,7 +303,8 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                     self.beaconRegion?.notifyOnExit = true;
                     self.beaconRegion?.notifyEntryStateOnDisplay = true;
                 } else {
-                    self.handleOutsideRegion()
+                    tem = true
+                    //self.handleOutsideRegion()
                 }
                 print("PRINTING REGION")
                 print(self.beaconRegion)
@@ -311,13 +314,17 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                 self.preLocation = loc
                 if (loc != self.location) {
                     if (loc == "outside") {
-                        self.handleOutsideRegion()
+                        tem = true
+                        //self.handleOutsideRegion()
                     } else {
                         print("I AM MONOTORING NOW")
                         locationManager.startMonitoring(for: self.beaconRegion!)
                     }
+                    if (tem == true) {
+                        self.handleOutsideRegion()
+                    }
                 } else {
-                    
+                    //do nothing
                 }
                 
                 break
@@ -329,8 +336,13 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
         }
     }
     
+    func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
+        print("%%%%%%%%%%%%%%%%")
+        print(error)
+    }
+    
     func handleInsideRegion() {
-        if (self.preLocation != "out" && self.role != "student" && self.role != "Professor") {
+        if (self.preLocation != "out" && self.preLocation != self.location) {
             let parameters: Parameters = ["userid":self.deviceUserId!,"action":"insert","availability":"Yes", "location": self.preLocation]
             Alamofire.request(Manager.availabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
                 .responseString { response in
@@ -346,7 +358,6 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     
     func handleOutsideRegion() {
         //if (self.preLocation != "out") {
-        if (self.role != "student" && self.role != "Professor") {
             let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No", "location": "outside"]
             Alamofire.request(Manager.availabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
                 .responseString { response in
@@ -355,13 +366,12 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                         print("*******\(data)****")
                     }
             }
-        }
+        //}
     }
     
     func handleUnknownRegion() {
         print("UNKNOWN REGION")
         //if (self.preLocation != "out") {
-        if (self.role != "student" && self.role != "Professor") {
             let parameters: Parameters = ["userid":self.deviceUserId!,"action":"update","availability":"No", "location": "outside"]
             Alamofire.request(Manager.availabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)
                 .responseString { response in
@@ -371,7 +381,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
                     }
                     
             }
-        }
+        //}
     }
     
     /*func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {

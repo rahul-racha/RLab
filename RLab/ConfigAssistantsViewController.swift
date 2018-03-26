@@ -22,7 +22,6 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
         let access_level = Manager.userData?["access_level"] as! String
         if (access_level != "super" && access_level != "super_ta" && access_level != "super_ra") {
             self.handleAlertAction(title: "Authorization",message: "Unauthorized access", actionTitle: "Ok")
-            
         }
         self.btnDisable.titleLabel?.adjustsFontSizeToFitWidth = true
         self.btnAdmin.titleLabel?.adjustsFontSizeToFitWidth = true
