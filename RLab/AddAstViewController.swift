@@ -24,7 +24,7 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
     
     //@IBOutlet weak var tableTopConstraint: NSLayoutConstraint!
     //@IBOutlet weak var btnBottomConstraint: NSLayoutConstraint!
-    
+    fileprivate var sectionDetails = [[String: String]]()
     fileprivate var midas_list: [String] = []
     fileprivate var username_list: [String] = []
     fileprivate var roles_selected = [String]()
@@ -32,7 +32,7 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
     fileprivate var fname_list = [String]()
     fileprivate var lname_list = [String]()
     fileprivate var uin_list = [String]()
-    fileprivate var role_list: [String] = ["T.A", "R.A", "Professor", "student"]
+    fileprivate var role_list =  [String]() // = ["T.A", "R.A", "Professor", "student"]
     fileprivate var section_list = [String]()
     fileprivate var section_selected = [String]()
     var isScroll: Bool?
@@ -43,11 +43,34 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         if (access_level != "super" && access_level != "super_ta" && access_level != "super_ra") {
             self.handleAlertAction(title: "Authorization",message: "Unauthorized access", actionTitle: "Ok")
         }
+        
+        let parameters: Parameters = [:]
+        Alamofire.request(Manager.getSecDetailsService,method: .get,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+            .responseData { response in
+                
+                if let data = response.data {
+                    do {
+                        self.sectionDetails = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [[String:String]]
+                        self.mapSections()
+                        self.initSectionPicker()
+//                        DispatchQueue.main.async(execute: {
+//                            
+//                        })
+                        
+                    }
+                    catch {
+                        //self.displayAlertMessage(message: "error serializing JSON: \(error)")
+                        print(error)
+                    }
+                }
+        }
+        
+        self.role_list = Manager.availRoles!
+        
         self.astTableView.tableFooterView = UIView(frame: CGRect.zero)
         //self.mapSections()
-        self.section_list = Array(Manager.sectionDetails!.keys)
+        //self.section_list = Array(Manager.sectionDetails!.keys)
         self.initPicker()
-        self.initSectionPicker()
         self.isScroll = true
         //NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         //NotificationCenter.default.addObserver(self, selector: #selector(AddAstViewController.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -136,11 +159,11 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         self.dismiss(animated: true, completion: nil)
     }
     
-//    func mapSections() {
-//        for section in Manager.sectionDetails! {
-//            self.section_list = [section.keys as! String]
-//        }
-//    }
+    func mapSections() {
+        for section in self.sectionDetails {
+            self.section_list.append(section["crn"]!)
+        }
+    }
     
     
     func isValidEmail(testStr:String) -> Bool {

@@ -248,6 +248,7 @@ class LoginViewController: UIViewController, NSURLConnectionDelegate {
                             Manager.beaconDetails = dict["beacon_details"] as! [[String: Any]]
                             Manager.sectionDetails = dict["section_details"] as! [String: String]
                             Manager.extras = dict["extras"] as! [String: Any]
+                            Manager.availRoles = dict["roles"] as! [String]
                             print("beacon details: \(Manager.beaconDetails)")
                             
                             if let user = Manager.userData?["midas_id"] as? String {
