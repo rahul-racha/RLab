@@ -150,7 +150,7 @@ class AvailabilityController: UIViewController,CLLocationManagerDelegate,UITable
     }
     
     func reloadAvailView() {
-        if (Manager.isAppActive == true) {
+        if (Manager.isAppActive == true && Manager.triggerNotifications == true) {
             self.viewDidLoad()
         }
     }

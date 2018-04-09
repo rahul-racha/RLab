@@ -41,6 +41,10 @@ struct Manager {
     
     static var updateProfileService = "http://qav2.cs.odu.edu/karan/LabBoard/EditProfile.php"
     static var configUserService = "http://qav2.cs.odu.edu/karan/LabBoard/ConfigUsers.php"
+    static var addNewSecService = "http://qav2.cs.odu.edu/karan/LabBoard/addNewSection.php"
+    
+    static var getSecDetailsService = "http://qav2.cs.odu.edu/karan/LabBoard/getSectionDetails.php"
+    static var delSectionService = "http://qav2.cs.odu.edu/karan/LabBoard/deleteSection.php"
 }
 
 

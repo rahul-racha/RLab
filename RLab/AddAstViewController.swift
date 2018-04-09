@@ -42,7 +42,6 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         let access_level = Manager.userData?["access_level"] as! String
         if (access_level != "super" && access_level != "super_ta" && access_level != "super_ra") {
             self.handleAlertAction(title: "Authorization",message: "Unauthorized access", actionTitle: "Ok")
-            
         }
         self.astTableView.tableFooterView = UIView(frame: CGRect.zero)
         //self.mapSections()
@@ -186,6 +185,26 @@ class AddAstViewController: UIViewController, UITextFieldDelegate {
         present(alertMsg, animated:true, completion: nil)
     }
 
+    
+    @IBAction func resetEntries(_ sender: Any) {
+        while (self.midas_list.count > 0) {
+            var indexPath = IndexPath(row: 0, section: 0)
+            
+            self.midas_list.remove(at: indexPath.row)
+            self.roles_selected.remove(at: indexPath.row)
+            self.mail_list.remove(at: indexPath.row)
+            self.username_list.remove(at: indexPath.row)
+            self.fname_list.remove(at: indexPath.row)
+            self.lname_list.remove(at: indexPath.row)
+            self.uin_list.remove(at: indexPath.row)
+            self.section_selected.remove(at: indexPath.row)
+            
+            self.astTableView.beginUpdates()
+            self.astTableView.deleteRows(at: [indexPath], with: .automatic)
+            self.astTableView.endUpdates()
+        }
+
+    }
     
     @IBAction func addAssistant(_ sender: Any) {
         if ((self.astTextField.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).isEmpty)! ||

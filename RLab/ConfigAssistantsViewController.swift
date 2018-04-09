@@ -117,11 +117,15 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
                         self.displayAlertMessage(title: "Alert", message: data)
                     } else {
                         
-                        for i in 0..<Manager.studentDetails!.count {
-                            if (self.configSet.contains((Manager.studentDetails?[i]["midas_id"] as? String)!)) {
-                                Manager.studentDetails?.remove(at: i)
+                        var cnt = 0
+                        while (cnt < Manager.studentDetails!.count ) {
+                            if (self.configSet.contains((Manager.studentDetails?[cnt]["midas_id"] as? String)!)) {
+                                Manager.studentDetails?.remove(at: cnt)
+                                cnt -= 1
                             }
+                            cnt += 1
                         }
+                        self.configSet.removeAll()
                         self.configTableView.reloadData()
                         self.displayAlertMessage(title: "Success", message: "Selected assistants are disabled!")
                     }
@@ -159,11 +163,15 @@ class ConfigAssistantsViewController: UIViewController, UITableViewDataSource, U
                         self.displayAlertMessage(title: "Alert", message: data)
                     } else {
                         
-                        for i in 0..<Manager.studentDetails!.count {
-                            if (self.configSet.contains((Manager.studentDetails?[i]["midas_id"] as? String)!)) {
-                                Manager.studentDetails?.remove(at: i)
+                        var cnt = 0
+                        while (cnt < Manager.studentDetails!.count ) {
+                            if (self.configSet.contains((Manager.studentDetails?[cnt]["midas_id"] as? String)!)) {
+                                Manager.studentDetails?.remove(at: cnt)
+                                cnt -= 1
                             }
+                            cnt += 1
                         }
+                        self.configSet.removeAll()
                         self.configTableView.reloadData()
                         self.displayAlertMessage(title: "Success", message: "Selected assistants are deleted!")
                     }

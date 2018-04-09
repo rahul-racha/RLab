@@ -37,8 +37,12 @@
 		820CC7AE201D4B55001830EF /* SideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7AD201D4B55001830EF /* SideViewController.swift */; };
 		820CC7B0201E6D9A001830EF /* AddAstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7AF201E6D9A001830EF /* AddAstViewController.swift */; };
 		820CC7B2201E75EB001830EF /* AstTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820CC7B1201E75EB001830EF /* AstTableViewCell.swift */; };
+		821D5C572079766900D6482C /* DeleteSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821D5C562079766900D6482C /* DeleteSectionViewController.swift */; };
+		821D5C592079770D00D6482C /* DeleteSectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821D5C582079770D00D6482C /* DeleteSectionTableViewCell.swift */; };
 		82AD975B1F6F8BB30043A00B /* DesignableX in Resources */ = {isa = PBXBuildFile; fileRef = 82AD975A1F6F8BB30043A00B /* DesignableX */; };
 		82BECABB1F88259A00DF8246 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */; };
+		82C062AB2077CC7300B6D2EB /* AddSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C062AA2077CC7300B6D2EB /* AddSectionViewController.swift */; };
+		82C062AD2077DB1F00B6D2EB /* SectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C062AC2077DB1F00B6D2EB /* SectionTableViewCell.swift */; };
 		82E874CB202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C1202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift */; };
 		82E874CC202E4A5E00E2E5C4 /* UITextFieldX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C2202E4A5E00E2E5C4 /* UITextFieldX.swift */; };
 		82E874CD202E4A5E00E2E5C4 /* UIButtonX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82E874C3202E4A5E00E2E5C4 /* UIButtonX.swift */; };
@@ -92,9 +96,13 @@
 		820CC7AD201D4B55001830EF /* SideViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideViewController.swift; sourceTree = "<group>"; };
 		820CC7AF201E6D9A001830EF /* AddAstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddAstViewController.swift; sourceTree = "<group>"; };
 		820CC7B1201E75EB001830EF /* AstTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AstTableViewCell.swift; sourceTree = "<group>"; };
+		821D5C562079766900D6482C /* DeleteSectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteSectionViewController.swift; sourceTree = "<group>"; };
+		821D5C582079770D00D6482C /* DeleteSectionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteSectionTableViewCell.swift; sourceTree = "<group>"; };
 		827977D31FEC688500B8D49B /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82AD975A1F6F8BB30043A00B /* DesignableX */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DesignableX; path = "../packages/DesignableX-master/DesignableXTesting/DesignableXTesting/DesignableX"; sourceTree = "<group>"; };
 		82BECABA1F88259A00DF8246 /* RegistrationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
+		82C062AA2077CC7300B6D2EB /* AddSectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddSectionViewController.swift; sourceTree = "<group>"; };
+		82C062AC2077DB1F00B6D2EB /* SectionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionTableViewCell.swift; sourceTree = "<group>"; };
 		82E874C1202E4A5E00E2E5C4 /* UIViewXRadialGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewXRadialGradient.swift; sourceTree = "<group>"; };
 		82E874C2202E4A5E00E2E5C4 /* UITextFieldX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITextFieldX.swift; sourceTree = "<group>"; };
 		82E874C3202E4A5E00E2E5C4 /* UIButtonX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButtonX.swift; sourceTree = "<group>"; };
@@ -244,6 +252,10 @@
 				82E8AE94203246640053AE0B /* EditProfileViewController.swift */,
 				82E8AE96203359C40053AE0B /* ConfigAssistantsViewController.swift */,
 				82E8AE982033C9CE0053AE0B /* ConfigTableViewCell.swift */,
+				82C062AA2077CC7300B6D2EB /* AddSectionViewController.swift */,
+				82C062AC2077DB1F00B6D2EB /* SectionTableViewCell.swift */,
+				821D5C562079766900D6482C /* DeleteSectionViewController.swift */,
+				821D5C582079770D00D6482C /* DeleteSectionTableViewCell.swift */,
 			);
 			name = SideReveal;
 			sourceTree = "<group>";
@@ -437,6 +449,8 @@
 				41D953131ECF627E0097587E /* ProfTableViewCell.swift in Sources */,
 				41EEF5B91E384217001DB052 /* LoginViewController.swift in Sources */,
 				41399F891E5D70C4000D82B8 /* DataManager.swift in Sources */,
+				82C062AD2077DB1F00B6D2EB /* SectionTableViewCell.swift in Sources */,
+				821D5C592079770D00D6482C /* DeleteSectionTableViewCell.swift in Sources */,
 				41D953181ED26B9A0097587E /* UpdateTableViewCell.swift in Sources */,
 				41891AE11EBFCA8A00CACF06 /* NotesCollectionViewCell.swift in Sources */,
 				82BECABB1F88259A00DF8246 /* RegistrationViewController.swift in Sources */,
@@ -450,9 +464,11 @@
 				82E874CD202E4A5E00E2E5C4 /* UIButtonX.swift in Sources */,
 				41D953101ECCFBC80097587E /* MemberTableViewCell.swift in Sources */,
 				82E8AE95203246640053AE0B /* EditProfileViewController.swift in Sources */,
+				82C062AB2077CC7300B6D2EB /* AddSectionViewController.swift in Sources */,
 				82E8AE992033C9CE0053AE0B /* ConfigTableViewCell.swift in Sources */,
 				41891ADE1EBFC69C00CACF06 /* NotesViewController.swift in Sources */,
 				820CC7B0201E6D9A001830EF /* AddAstViewController.swift in Sources */,
+				821D5C572079766900D6482C /* DeleteSectionViewController.swift in Sources */,
 				41A989391E7CD7C200778E77 /* AvailabilityChartView.swift in Sources */,
 				4112F15C1E822BF500373351 /* XAxisFormatter.swift in Sources */,
 				4184E09B1E77819900304630 /* AgileViewController.swift in Sources */,
