@@ -18,6 +18,7 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
     @IBOutlet weak var agileCollectionViewOutlet: UICollectionView!
     @IBOutlet weak var toggleAssistant: UISwitch!
     let stopMonitoringKey = "com.Tlab.stopMonitoring"
+    @IBOutlet weak var menuBtnItem: UIBarButtonItem!
     var agileBoardData : [Dictionary<String,Any>]?
     var row_id = 0
     var userName: String?
@@ -28,26 +29,51 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
         super.viewDidLoad()
         print ("I am HERE in View")
         toggleAssistant.addTarget(self, action: #selector(AvailabilityController.viewDidLoad), for: UIControlEvents.valueChanged)
+        self.menuBtnItem.target = revealViewController()
+        self.menuBtnItem.action = #selector(SWRevealViewController.revealToggle(_:))
         
         Manager.controlData = false
-        var userId: Int?
-        if(Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
+        
+//        var userId: Int?
+//        if(Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
+//            self.toggleAssistant.isHidden = false
+//            if(self.toggleAssistant.isOn == true) {
+//                userId = 6
+//                Manager.toggleAssistant = true
+//            }else {
+//                userId = 14
+//                Manager.toggleAssistant = false
+//            }
+//        }
+//        else {
+//            self.toggleAssistant.isHidden = true
+//            userId = Int(Manager.userData?["userid"] as! String)
+//        }
+        self.toggleAssistant.isHidden = true
+        var proxyUser = 0
+        let role = Manager.userData?["role"] as! String
+        let access_level = Manager.userData?["access_level"] as! String
+        
+        if (role == "Professor" && access_level == "super") {
             self.toggleAssistant.isHidden = false
-            if(self.toggleAssistant.isOn == true) {
-                userId = 6
+            if (self.toggleAssistant.isOn == true) {
+                proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
                 Manager.toggleAssistant = true
             }else {
-                userId = 14
+                proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
                 Manager.toggleAssistant = false
             }
+        } else if (role == "Professor" && access_level == "super_ra") {
+            proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
+        } else if (role == "Professor" && access_level == "super_ta") {
+            proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
+        } else {
+            proxyUser = Int(Manager.userData?["userid"] as! String)!
         }
-        else {
-            self.toggleAssistant.isHidden = true
-            userId = Int(Manager.userData?["userid"] as! String)
-        }
+
         
-        let parameters: Parameters = ["userid":userId!]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetAgileBoardData.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseJSON { response in
+        let parameters: Parameters = ["userid":proxyUser]
+        Alamofire.request(Manager.agileBoardService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/.responseJSON { response in
             
             if let data = response.data {
                 do {
@@ -158,19 +184,6 @@ class AgileViewController: UIViewController,UICollectionViewDataSource, UICollec
             destinationViewController.projectName = self.projectName
         }
     }
-    
-    @IBAction func logout(_ sender: Any) {
-        Manager.triggerNotifications = false
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
-        
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
-        UIApplication.shared.keyWindow?.rootViewController = destinationController
-        self.dismiss(animated: true, completion: nil)
-        self.present(destinationController, animated: true, completion: nil)
-        
-    }
-    
     
 }
 

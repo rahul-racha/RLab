@@ -25,7 +25,7 @@ class LogViewController: UIViewController,UITableViewDataSource, UITableViewDele
         print("log: \(self.color)!")
         self.title = self.userName
         let parameters: Parameters = ["userid":userId!]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetAvailabilityLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.getAvailabilityLogService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
                 if let data = response.data {

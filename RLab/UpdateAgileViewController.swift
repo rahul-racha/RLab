@@ -27,7 +27,7 @@ class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         // Do any additional setup after loading the view.
         if (self.projectName != nil) {
             let parameters: Parameters = ["projname":self.projectName!]
-            Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetUpdateLog.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+            Alamofire.request(Manager.getAgileUpdateService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
                 .responseJSON { response in
                     
                     if let data = response.data {
@@ -135,7 +135,7 @@ class UpdateAgileViewController: UIViewController, UITableViewDataSource, UITabl
         
         let userid = Int((Manager.userData?["userid"] as? String)!)
         let parameters: Parameters = ["userid":userid!, "projname": self.projectName!, "update": self.newMessage.text]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/newUpdate.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
+        Alamofire.request(Manager.updateAgileMsgService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300)/*.validate(contentType: ["application/json"])*/
             .responseData { response in
                 DispatchQueue.main.async(execute: {
                     

@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>BEMCheckBox.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>BadgeSwift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -32,7 +37,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>26EDBDC9BB6A5C39BC526C14FE8AC075</key>
+		<key>2216CE7ECB26D98D46A30E6CC38DAC19</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -47,12 +52,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>81848F474F5D97E256EB368F45790A35</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>88E9EC28B8B46C3631E6B242B50F4442</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EA9AD79F906A0EA27201218424A9CDF0</key>
+		<key>BC19A72FB7D1DB0B2CC5F6C5CF2400F4</key>
 		<dict>
 			<key>primary</key>
 			<true/>

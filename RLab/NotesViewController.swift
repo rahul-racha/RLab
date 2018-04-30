@@ -16,6 +16,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
     @IBOutlet weak var toggleAssistant: UISwitch!
     
     let stopMonitoringKey = "com.Tlab.stopMonitoring"
+    @IBOutlet weak var menuBtnItem: UIBarButtonItem!
     var userId: Int?
     var subrole: String?
     var studentNotes : [Dictionary<String,Any>]?
@@ -31,26 +32,57 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         self.newNote = false
         
         toggleAssistant.addTarget(self, action: #selector(NotesViewController.viewDidLoad), for: UIControlEvents.valueChanged)
-        if(Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
+        self.menuBtnItem.target = revealViewController()
+        self.menuBtnItem.action = #selector(SWRevealViewController.revealToggle(_:))
+        
+        
+//        if(Manager.userData != nil && Manager.userData!["role"] as! String == "Professor") {
+//            self.toggleAssistant.isHidden = false
+//            if(self.toggleAssistant.isOn == true) {
+//                userId = 6
+//                self.subrole = "R.A"
+//                Manager.toggleAssistant = true
+//            }else {
+//                userId = 14
+//                self.subrole = "T.A"
+//                Manager.toggleAssistant = false
+//            }
+//        }
+//        else {
+//            self.toggleAssistant.isHidden = true
+//            self.subrole = Manager.userData?["role"] as? String
+//            userId = Int(Manager.userData?["userid"] as! String)
+//        }
+        self.toggleAssistant.isHidden = true
+        var proxyUser = 0
+        let role = Manager.userData?["role"] as! String
+        let access_level = Manager.userData?["access_level"] as! String
+        
+        if (role == "Professor" && access_level == "super") {
             self.toggleAssistant.isHidden = false
-            if(self.toggleAssistant.isOn == true) {
-                userId = 6
+            if (self.toggleAssistant.isOn == true) {
+                proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
                 self.subrole = "R.A"
                 Manager.toggleAssistant = true
             }else {
-                userId = 14
+                proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
                 self.subrole = "T.A"
                 Manager.toggleAssistant = false
             }
+        } else if (role == "Professor" && access_level == "super_ra") {
+            proxyUser = Int(Manager.extras?["dummy_ra_ID"] as! String)!
+            self.subrole = "R.A"
+        } else if (role == "Professor" && access_level == "super_ta") {
+            proxyUser = Int(Manager.extras?["dummy_ta_ID"] as! String)!
+            self.subrole = "T.A"
+        } else {
+            proxyUser = Int(Manager.userData?["userid"] as! String)!
+            self.subrole = role
         }
-        else {
-            self.toggleAssistant.isHidden = true
-            self.subrole = Manager.userData?["role"] as? String
-            userId = Int(Manager.userData?["userid"] as! String)
-        }
+
         
-        let parameters: Parameters = ["userid": userId == nil ? 0:userId! ]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/GetNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        let parameters: Parameters = ["userid": proxyUser ]
+        Alamofire.request(Manager.getNotesService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 if let data = response.data {
                     do {
@@ -118,7 +150,7 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         let idVal : Int = ((sender as AnyObject).layer.value(forKey: "cellId")) as! Int
         print("id \(idVal)")
         let parameters: Parameters = ["id": idVal]
-        Alamofire.request("http://qav2.cs.odu.edu/karan/LabBoard/DeleteNotes.php",method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
+        Alamofire.request(Manager.delNotesService,method: .post,parameters: parameters, encoding: URLEncoding.default).validate(statusCode: 200..<300).validate(contentType: ["application/json"])
             .responseJSON { response in
                 
                 if response.data != nil {
@@ -193,16 +225,5 @@ class NotesViewController: UIViewController, UICollectionViewDataSource, UIColle
         destinationController.subrole = self.subrole
         self.present(destinationController, animated: true, completion: nil)
     }
-    
-    
-    @IBAction func logout(_ sender: Any) {
-        Manager.triggerNotifications = false
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: stopMonitoringKey), object: nil)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let destinationController = storyboard.instantiateViewController(withIdentifier: "ViewController")
-        UIApplication.shared.keyWindow?.rootViewController = destinationController
-        self.dismiss(animated: true, completion: nil)
-        self.present(destinationController, animated: true, completion: nil)
-        
-    }
+
 }
