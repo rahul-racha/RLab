@@ -18,7 +18,7 @@ The application aims to help students and professors with an automated system th
 - Sends response to a cron job request occurring periodically to handle the availablity status with better accuracy.
 - Simple notes can also be added by the T.A's.
 
-
+<img src="./resources/rlab-screenshot.png">
 
 # Requirements
 * Swift 3
